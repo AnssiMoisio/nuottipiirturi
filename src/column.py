@@ -14,15 +14,14 @@ class Column(object):
     bar = "==="
     
     def __init__(self, composition, measure, start):
-        self.measure = measure                            # 0,1,2,...
-        self.start = start               # 1/8 - 8/8
-        self.starting = 10 * [None]       # not ideal type of list ? the items that start in this column                   
+        self.measure = measure                          # 0,1,2,...
+        self.start = start                              # 1/8 - 8/8
+        self.starting = 10 * [None]                     # not ideal type of list ? the items that start in this column                   
         self.find_items(composition)
-        self.rows = 11 * [None]                    # 11 strings of 3 characters, the 11 rows of the stave
-        self.add_rows()                                   # empty rows
+        self.rows = 11 * [None]                         # 11 strings of 3 characters, the 11 rows of the stave
+        self.add_rows()                                 # empty rows
         self.add_items()
 
-        
         
     def add_rows(self):
         ''' Adds empty rows for this column. '''
@@ -40,10 +39,8 @@ class Column(object):
         # items that start at this column
         k = 0
         for i in range(len(composition.array)):
-            
             if composition.array[i] != None and composition.array[i].measure == self.measure and composition.array[i].start == self.start:
                 self.starting[k] = composition.array[i]
-                print(self.starting[0])
                 k += 1
                 
         # implement: find bars over the column
@@ -65,7 +62,7 @@ class Column(object):
                 
                 
         #### test print
-        for i in range(len(self.rows)):
-            print(self.rows[i])
+        #for i in range(len(self.rows)):
+        #    print(self.rows[i])
         ####
     
