@@ -4,11 +4,11 @@ from composition import Composition
 from char_graphics import CharGraphics
 
 def main():
-    item = Item(Item.NOTE, Item.C, 0, 1/8, 1/4)       #(item_type, pitch, measure, start, duration)
+    item = Item(Item.NOTE, Item.C, 0, 1/8, 1/8)       #(item_type, pitch, measure, start, duration)
     item2 = Item(Item.NOTE, Item.D, 0, 2/8, 1/4)
     item3 = Item(Item.NOTE, Item.E, 0, 3/8, 1/4)
-    item4 = Item(Item.NOTE, Item.F, 0, 4/8, 1/4)
-    item5 = Item(Item.NOTE, Item.c1, 0, 5/8, 1/4)
+    item4 = Item(Item.NOTE, Item.F, 0, 4/8, 1/8)
+    item5 = Item(Item.NOTE, Item.c1, 0, 5/8, 1/8)
     item6 = Item(Item.NOTE, Item.d1, 0, 6/8, 1/4)
     item7 = Item(Item.NOTE, Item.e1, 0, 7/8, 1/4)
     item8 = Item(Item.NOTE, Item.f1, 0, 8/8, 1/4)
