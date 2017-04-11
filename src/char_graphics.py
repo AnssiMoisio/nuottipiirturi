@@ -20,14 +20,14 @@ class CharGraphics(object):
                     
         columns = int(2/shortest) * [None]              # list of columns in this measure
         
-        for i in range(int(2/shortest)):                                    # for each column in measure
-            items = []                                                      # new list for items that are in this column
-            for item in composition.array:                                  # for each item in composition 
-                if item.measure == measure and item.start == i*shortest:    # if item is in this column
-                    items.append(item)                                      # add to list
-            
-            col = Column(items, measure, shortest*i)                        # create new column
-            columns[i] = col                                                # add to the list of columns of this measure
+        for i in range(int(2/shortest)):                                                          # for each column in measure
+            items = []                                                                            # new list for items that are in this column
+            for item in composition.array:                                                        # for each item in composition 
+                if item.measure == measure and item.start == ((shortest*i) + shortest)/2:         # if item is in this column
+                    items.append(item)                                                            # add to list
+                    
+            col = Column(items, measure, ((shortest*i) + shortest)/2)                             # create new column
+            columns[i] = col                                                                      # add to the list of columns of this measure
         
         
         measurerows = columns[0].rows                                       # this will be the printable measure, list of 11 rows
