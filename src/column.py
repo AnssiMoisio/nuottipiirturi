@@ -3,25 +3,27 @@ from item import Item
 
 class Column(object):
 
-    wholenote = "  ()"
-    halfnote = " 00"
-    head_odd = " @@ "
-    head_even = "-@@-"
-    stem_odd = "  | "
-    stem_even = "--|-"
-    eighth_stem1_even = "  |\\"
-    eighth_stem1_odd = "--|\\"
-    eighth_stem2_even = "  \ "
-    eighth_stem2_odd = "--\-"
+    wholenote_odd           = " () "
+    wholenote_even          = "-()-"
+    halfnote_odd            = " OO "
+    halfnote_even           = "-OO-"
+    head_odd                = " @@ "
+    head_even               = "-@@-"
+    stem_odd                = "  | "
+    stem_even               = "--|-"
+    eighth_stem1_even       = "  |\\"
+    eighth_stem1_odd        = "--|\\"
+    eighth_stem2_even       = "  \ "
+    eighth_stem2_odd        = "--\-"
 
-    bar = "==="
+    bar                     = "==="
     
     def __init__(self, items, measure, start):
         self.measure = measure                          # 0,1,2,...
         self.start = start                              # e.g. 1/8 - 8/8, moment in measure
         self.starting = []                              # the items that start in this column                   
         self.starting_items(items)
-        self.rows = 11 * [None]                         # 11 strings of 3 characters, the 11 rows of the stave
+        self.rows = 14 * [None]                         # 11 strings of 3 characters, the 11 rows of the stave
         self.add_rows()                                 # empty rows
         self.add_items()
 
@@ -29,11 +31,10 @@ class Column(object):
     def add_rows(self):
         ''' Adds empty rows for this column. '''
         
-        for i in range(0,10,2):
-            self.rows[i] = "----"
-        for i in range(1,11,2):
+        for i in range(0,14):
             self.rows[i] = "    "
-        self.rows[10] = "    "
+        for i in range(2,11,2):
+            self.rows[i] = "----"
         
 
     def starting_items(self, items):
@@ -82,8 +83,7 @@ class Column(object):
                     e_stem1 = self.eighth_stem1_even
                     e_stem2 = self.eighth_stem1_odd
                     e_stem = self.eighth_stem2_even
-
-                                    
+     
                 if self.starting[i].duration == 1/4:
                     self.rows[self.starting[i].pitch]           = head
                     self.rows[self.starting[i].pitch - (1*a)]   = stem1
@@ -97,10 +97,3 @@ class Column(object):
                     self.rows[self.starting[i].pitch - (2*a)]   = e_stem1
                     self.rows[self.starting[i].pitch - (3*a)]   = e_stem2
                     self.rows[self.starting[i].pitch - (4*a)]   = e_stem
-                    
-                              
-        #### test print
-        #for i in range(len(self.rows)):
-        #    print(self.rows[i])
-        ####
-    
