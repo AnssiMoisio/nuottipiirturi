@@ -16,7 +16,7 @@ class Column(object):
     eighth_stem2_even       = "  \ "
     eighth_stem2_odd        = "--\-"
 
-    bar                     = "==="
+    beam                    = "===="
     
     def __init__(self, items, measure, start):
         self.measure = measure                          # 0,1,2,...
@@ -45,7 +45,7 @@ class Column(object):
             if item != None and item.measure == self.measure and item.start == self.start:
                 self.starting.append(item)
                 
-        # implement: find bars over the column
+        # implement: find beams over the column
 
                 
     def add_items(self):
@@ -58,7 +58,7 @@ class Column(object):
         for i in range(len(self.starting)):
             if self.starting[i] != None and self.starting[i].item_type == Item.NOTE:
                 
-                if self.starting[i].pitch > 3:
+                if self.starting[i].pitch > 5:
                     a = 1                                   # stem points up
                 else:
                     a = -1                                    # stem points down
