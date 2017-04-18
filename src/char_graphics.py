@@ -10,42 +10,29 @@ class CharGraphics(object):
     def __init__(self, composition):
         
         self.measures = []
-        self.measures.append(self.create_measure(composition, 0))
-        self.measures.append(self.create_measure(composition, 1))
-
-        self.beams = []
+        self.add_measures(composition)
         #self.add_tie(Item.c1, 0, 7, 9)
-        
         self.print_sheet()
         
         
-        #self.sheet = []
-        
     def create_measure(self, composition, measure):
         '''
-        Creates one printable measure.
+        Creates one printable measure and returns it as X * 14 matrix, where X is the number of columns,
+        which is determined by the shortest note length. e.g. if shortest note is 1/8, measure contains 8 columns.
         '''
         
         shortest = 1
-        for item in composition.array:               # e.g. if shortest note is 1/8, measure contains 16 columns
+        for item in composition.array:               # e.g. if shortest note is 1/8, measure contains 8 columns
             if measure == item.measure:              #
                 if item.duration < shortest:         #
                     shortest = item.duration         #
                     
-        columns = int(2/shortest) * [None]           # list of columns in this measure
-        
-
-        
-        for i in range(int(2/shortest)):                                                          # for each column in measure
-            items = []                                                                            # new list for items that are in this column
-            for item in composition.array:                                                        # for each item in composition 
-                if item.measure == measure and item.start == ((shortest*i) + (2*shortest))/2:     # if item is in this column
-                    items.append(item)                                                            # add to list
-                    
-            col = Column(items, measure, ((shortest*i) + (2*shortest))/2)                         # create new column
+        columns = int(1/shortest) * [None]           # list of columns in this measure
+             
+        for i in range(len(columns)):                                                             # for each column in measure
+            col = Column(composition.array, measure, (shortest*i) + shortest)                     # create new column
             columns[i] = col                                                                      # add to the list of columns of this measure
         
-
         measure_matrix = [[None]*14 for i in range(len(columns))]
         i = 0
         j = 0
@@ -56,16 +43,17 @@ class CharGraphics(object):
         return measure_matrix
     
     
+    def add_measures(self, composition):
+        for i in range(composition.length):
+            measure = self.create_measure(composition, i)
+            self.measures.append(measure)
+            
+
+    
+    
     def add_tie(self, pitch, measure, start, stop):
         for i in range(start,stop):
             self.measures[measure][i][pitch] = self.tie1
-        
-            
-            
-    def create_sheet(self):
-        '''
-        Collects the measures to create a sheet music.
-        '''
 
 
     def print_sheet(self):
