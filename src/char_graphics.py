@@ -1,11 +1,6 @@
-from item import Item
-from composition import Composition
 from column import Column
 
 class CharGraphics(object):
-    
-    
-    
     
     def __init__(self, composition):
         
@@ -48,14 +43,12 @@ class CharGraphics(object):
             measure = self.create_measure(composition, i)
             self.measures.append(measure)
             
-
-    
-    
+            
     def add_tie(self, pitch, measure, start, stop):
         for i in range(start,stop):
             self.measures[measure][i][pitch] = self.tie1
-
-
+            
+            
     def print_sheet(self):
         
         for k in range(len(self.measures)):                                            # for each measure
@@ -63,7 +56,7 @@ class CharGraphics(object):
                 whole_row = self.measures[k][0][j][0]                                  # add first char of first column of this row
                 for i in range(len(self.measures[k]) - 1):                             # for each column in matrix
                     for c in range(6):                                                 # for each char
-                        whole_row = whole_row + self.measures[k][i+1][j][c]                   # add next string
+                        whole_row = whole_row + self.measures[k][i+1][j][c]            # add next char
     
                 print(whole_row)
                 

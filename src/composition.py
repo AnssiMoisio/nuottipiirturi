@@ -1,5 +1,3 @@
-from item import Item 
-
 class Composition(object):
     
     def __init__(self, name, creator, meter, length):
