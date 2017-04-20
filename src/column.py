@@ -3,8 +3,8 @@ from item import Item
 
 class Column(object):
 
-    wholenote_odd           = "  ()  "
-    wholenote_even          = "--()--"
+    head_whole_odd          = "  ()  "
+    head_whole_even         = "--()--"
     halfnote_odd            = "  OO  "
     halfnote_even           = "--OO--"
     head_odd                = "  @@  "
@@ -12,10 +12,15 @@ class Column(object):
     
     stem_odd                = "   |  "
     stem_even               = "---|--"
-    eighth_stem1_even       = "   |\\ "
-    eighth_stem1_odd        = "---|\\-"
+    
+    eighth_stem1_even       = "   |\ "
+    eighth_stem1_odd        = "---|\-"
     eighth_stem2_even       = "   \  "
     eighth_stem2_odd        = "---\--"
+    
+    s_stem_odd              = "   || "
+    s_stem_even             = "---||-"
+
 
     beam                    = "======"
     beamstart_odd           = "   ==="
@@ -77,35 +82,50 @@ class Column(object):
                     
             if note.pitch % 2 == 0:          # note is on even row
                 head = self.head_even
+                head_half = self.halfnote_even
+                head_whole = self.head_whole_even
                 stem1 = self.stem_odd
                 stem2 = self.stem_even
                 e_stem1 = self.eighth_stem1_odd
                 e_stem2 = self.eighth_stem1_even
                 e_stem = self.eighth_stem2_odd
-                #halfnote = self.halfnote_even            add all other types
+                s_stem = self.s_stem_odd
                 
             else:                                         # note is on odd row
                 head = self.head_odd
+                head_half = self.halfnote_odd
+                head_whole = self.head_whole_odd
                 stem1 = self.stem_even
                 stem2 = self.stem_odd
                 e_stem1 = self.eighth_stem1_even
                 e_stem2 = self.eighth_stem1_odd
                 e_stem = self.eighth_stem2_even
+                s_stem = self.s_stem_even
             
-            self.rows[note.pitch] = head
- 
-            if note.duration == 1/4:
+            if note.duration == 1:
+                self.rows[note.pitch]           = head_whole
+            
+            elif note.duration == 1/2:
+                self.rows[note.pitch]           = head_half
                 self.rows[note.pitch - (1*a)]   = stem1
+            
+            elif note.duration == 1/4 or note.duration == 1/8 or note.duration == 1/16:
+                self.rows[note.pitch]           = head
+                self.rows[note.pitch - (1*a)]   = stem1
+
+            if note.duration == 1/2 or note.duration == 1/4:
                 self.rows[note.pitch - (2*a)]   = stem2
                 self.rows[note.pitch - (3*a)]   = stem1
                 self.rows[note.pitch - (4*a)]   = stem2
            
-            elif note.duration == 1/8:
-                self.rows[note.pitch - (1*a)]   = stem1
+            elif note.duration == 1/8 or note.duration == 1/16:
                 self.rows[note.pitch - (2*a)]   = e_stem1
                 self.rows[note.pitch - (3*a)]   = e_stem2
                 self.rows[note.pitch - (4*a)]   = e_stem
-        
+            
+            if note.duration == 1/16:
+                self.rows[note.pitch - (1*a)]   = s_stem
+       
         elif len(self.notes) > 1 and len(self.beams) == 0:
 
             for i in range(len(self.notes) - 1):
