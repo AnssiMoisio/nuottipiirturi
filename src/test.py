@@ -9,7 +9,7 @@ def main():
     item2 = Item(Item.NOTE, Item.G, 0, 1/8, 1/2)
     item3 = Item(Item.NOTE, Item.f1, 0, 3/8, 1/4)
     item4 = Item(Item.NOTE, Item.b1, 0, 4/8, 1/8)
-    item5 = Item(Item.NOTE, Item.C, 0, 3/8, 1/16)
+    item5 = Item(Item.NOTE, Item.C, 0, 3/8, 1/8)
     item6 = Item(Item.NOTE, Item.d1, 0, 3/8, 1/8)
     item7 = Item(Item.NOTE, Item.B, 0, 7/8, 1/16)
     item8 = Item(Item.NOTE, Item.f1, 0, 8/8, 1/8)
