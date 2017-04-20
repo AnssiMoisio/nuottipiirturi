@@ -57,12 +57,13 @@ class CharGraphics(object):
 
 
     def print_sheet(self):
-
+        
         for k in range(len(self.measures)):                                            # for each measure
             for j in range(14):                                                        # for each row
-                whole_row = self.measures[k][0][j]                                     # add first column of this row
+                whole_row = self.measures[k][0][j][0]                                  # add first char of first column of this row
                 for i in range(len(self.measures[k]) - 1):                             # for each column in matrix
-                    whole_row = whole_row + self.measures[k][i+1][j]                   # add next string
+                    for c in range(6):                                                 # for each char
+                        whole_row = whole_row + self.measures[k][i+1][j][c]                   # add next string
     
                 print(whole_row)
                 
