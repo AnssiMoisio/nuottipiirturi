@@ -7,6 +7,7 @@ class Composition(object):
         @param length: length of the melody in measures, integer
         '''
         self.array = []                         # 
+        self.beams = []
         self.creator = creator                  # string
         self.name = name                        # string
         self.meter = meter                      # only 3/4 or 4/4 for now
@@ -16,6 +17,8 @@ class Composition(object):
     def add_item(self, item):
         self.array.append(item)
         
+    def add_beam(self,beam):
+        self.beams.append(beam)
         
     def remove_item(self, item):
         self.array.remove(item)

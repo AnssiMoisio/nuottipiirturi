@@ -22,7 +22,6 @@ class Item(object):
     ''' Item type'''
     NOTE            = 20
     REST            = 21
-    LYRICSYLLABLE   = 22
     
     def __init__(self, item_type, pitch, measure, start, duration):
         self._set_type(item_type)
@@ -30,10 +29,9 @@ class Item(object):
         self.measure = measure
         self._set_start(start)
         self._set_duration(duration)
-        self.beam = False
         
     def _set_type(self, item_type):
-        if item_type in [Item.NOTE, Item.REST, Item.LYRICSYLLABLE]:
+        if item_type in [Item.NOTE, Item.REST]:
             self.item_type = item_type
         else:
             raise ValueError("Bad item type given")

@@ -25,7 +25,7 @@ class CharGraphics(object):
         columns = int(1/shortest) * [None]           # list of columns in this measure
              
         for i in range(len(columns)):                                                             # for each column in measure
-            col = Column(composition.array, measure, (shortest*i) + shortest)                     # create new column
+            col = Column(composition.array, composition.beams, measure, (shortest*i) + shortest)                     # create new column
             columns[i] = col                                                                      # add to the list of columns of this measure
         
         measure_matrix = [[None]*14 for i in range(len(columns))]
