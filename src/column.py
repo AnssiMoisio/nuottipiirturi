@@ -7,7 +7,7 @@ class Column(object):
         self.beams = beams
         self.rests = []               
         self.find_items(items)
-        self.rows = [[None]*6 for i in range(14)]       # 14 rows of the stave, 6 characters wide column
+        self.rows = [[None]*6 for i in range(15)]       # 14 rows of the stave, 6 characters wide column
         self.add_rows()                                 # empty rows
         self.add_stems()
         self.add_notes()
@@ -29,7 +29,7 @@ class Column(object):
         ''' Adds empty rows for this column. '''
         
         for j in range(6):
-            for i in range(0,14):
+            for i in range(0,15):
                 self.rows[i][j] = " "
             for i in range(2,11,2):
                 self.rows[i][j] = "-"
