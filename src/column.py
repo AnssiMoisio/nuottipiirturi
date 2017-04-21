@@ -64,8 +64,10 @@ class Column(object):
             for beam in self.beams:
                 if note in beam.notes:
                     beamed.append(note)
-                else:
-                    flagged.append(note)
+                    
+        for note in self.notes:
+            if note not in beamed:
+                flagged.append(note)
                 
         count = len(flagged)
         if count == 1:
@@ -81,22 +83,13 @@ class Column(object):
                         temp = flagged[i]
                         flagged[i] = flagged[i+1]
                         flagged[i+1] = temp
-                    
-            for i in range(1, count):
-                
-                dif = flagged[i].pitch - flagged[i-1].pitch
-                if  dif < 5:
-                    if self.notes[i-1].pitch > 5:
-                        self.create_stem(flagged[i], flagged[i-1])
-                        self.create_flag(flagged[i], flagged[i-1])
-                    else:
-                        self.create_stem(flagged[i-1], flagged[i-1])
-                        self.create_flag(flagged[i-1], flagged[i-1])
-                    i +=1
-                    
-                elif i+1 > count-1 or dif > 4:
-                    self.create_stem(flagged[i], flagged[i])
-                    self.create_flag(flagged[i], flagged[i])
+                        
+            for i in range(flagged[0].pitch, flagged[count-1].pitch):
+                self.rows[i][3] = "|"
+            
+            if flagged[0].pitch > 5:
+                self.create_stem(flagged[0],flagged[0])
+                self.create_flag(flagged[0],flagged[0])
                     
         for note in beamed:
             for beam in self.beams:
@@ -111,7 +104,6 @@ class Column(object):
         else: a = -1                                    # stem points down
         
 
-        
         if note.duration < 1:
             for k in range(1,5):
                 self.rows[note.pitch - k*a][3] = "|"

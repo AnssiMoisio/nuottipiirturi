@@ -21,10 +21,24 @@ class Beam(object):
         
     def add_pitch(self):
         sum = 0
+        a = False
+        b = False
         for note in self.notes:
+            if note.pitch < 5:
+                if note.pitch == 0:
+                    b = True
+                a = True
+                break
             sum += note.pitch - 5
-        pitch = int(sum / len(self.notes))
-        self.pitch = pitch
+        if not a:
+            pitch = int(sum / len(self.notes))
+            self.pitch = pitch
+        
+        if b:
+            self.pitch = 14
+        elif a:
+            self.pitch = 0
+
     
     
     def add_start(self):

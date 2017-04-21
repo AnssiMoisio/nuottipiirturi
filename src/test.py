@@ -16,9 +16,14 @@ def main():
     
     composition = Composition(None, None, 0, 2)       # (name, creator, meter, length)
     
-    beams = [item, item2]
-    beam = Beam(beams)
+    notes = [item, item2]
+    beam = Beam(notes)
     Composition.add_beam(composition,beam)
+    
+    notes2 = [item7, item8]
+    beam = Beam(notes2)
+    Composition.add_beam(composition,beam)
+
     
     Composition.add_item(composition,item)
     Composition.add_item(composition,item2)
@@ -35,9 +40,13 @@ def main():
     item3 = Item(Item.NOTE, Item.D, 1, 3/8, 1)
     item4 = Item(Item.NOTE, Item.F, 1, 4/8, 1/2)
     item5 = Item(Item.NOTE, Item.G, 1, 5/8, 1/8)
-    item6 = Item(Item.NOTE, Item.A, 1, 6/8, 1/8)
+    item6 = Item(Item.NOTE, Item.A, 1, 6/8, 1/16)
     item7 = Item(Item.NOTE, Item.b1, 1, 7/8, 1/8)
     item8 = Item(Item.NOTE, Item.E, 1, 8/8, 1/8)
+    
+    notes3 = [item7, item5]
+    beam = Beam(notes3)
+    Composition.add_beam(composition,beam)
 
     Composition.add_item(composition,item12)
     Composition.add_item(composition,item2)
