@@ -1,28 +1,41 @@
+from item import Item
+
 class Column(object):
     
     def __init__(self, items, beams, measure, start):
         self.measure = measure                          # 0,1,2,...
         self.start = start                              # e.g. 1/8 - 8/8, moment in measure
         self.notes = []                                 # notes that start in this column
-        self.beams = beams
+        self.beams = []
         self.rests = []               
-        self.find_items(items)
+        self.find_items(items, beams)
         self.rows = [[None]*6 for i in range(15)]       # 14 rows of the stave, 6 characters wide column
         self.add_rows()                                 # empty rows
         self.add_stems()
         self.add_notes()
+        self.add_rests()
         self.create_beams()
         
 
-    def find_items(self, items):
+    def find_items(self, items, beams):
         ''' Finds items that are on this column. '''
 
         # notes
         for item in items:
             if item.measure == self.measure and item.start == self.start:
-                self.notes.append(item)
+                if item.item_type == Item.NOTE:
+                    self.notes.append(item)
+                elif item.item_type == Item.REST:
+                    self.rests.append(item)
+        
+        for note in self.notes:
+            for rest in self.rests:
+                if note.start == rest.start:
+                    raise TypeError("Rest and note at same beat")
                 
-        # implement: all kinds of shit
+        for beam in beams:
+            if beam.measure == self.measure:
+                self.beams.append(beam)
         
          
     def add_rows(self):
@@ -137,6 +150,7 @@ class Column(object):
         
         
     def create_beams(self):
+        
         for beam in self.beams:
             if beam.measure == self.measure:
                 if beam.start < self.start and beam.end > self.start:
@@ -151,4 +165,44 @@ class Column(object):
                     for i in range(4):
                         self.rows[beam.pitch][i] = "="
                         
+    def add_rests(self):
+        for rest in self.rests:
+            if rest.duration ==         4:
+                self.rows[4] = "--##--"
+                self.rows[5] = "  ##  "
+                self.rows[6] = "--##--"
+                self.rows[7] = "  ##  "
+                self.rows[8] = "--##--"
+            elif rest.duration ==       2:
+                self.rows[4] = "--##--"
+                self.rows[5] = "  ##  "
+                self.rows[6] = "--##--"
+            elif rest.duration ==       1:
+                self.rows[4] = "-####-"
+                self.rows[5] = " #### "
+            elif rest.duration ==       1/2:
+                self.rows[5] = " #### "
+                self.rows[6] = "-####-"
+            elif rest.duration ==       1/4:
+                self.rows[4] = "--\---"
+                self.rows[5] = "  //  "
+                self.rows[6] = "--\---"
+                self.rows[7] = "  C   "
+            elif rest.duration ==       1/8:
+                self.rows[5] = "  @^/ "
+                self.rows[6] = "---/--"
+                self.rows[7] = "  /   "
+            elif rest.duration ==       1/16:
+                self.rows[5] = "  @^/ "
+                self.rows[6] = "---/--"
+                self.rows[7] = "@^/   "
+                self.rows[8] = "-/----"
+            elif rest.duration ==       1/32:
+                self.rows[5]  = " @^|  "
+                self.rows[6]  = "---|--"
+                self.rows[7]  = " @^|  "
+                self.rows[8]  = "---|--"
+                self.rows[9]  = " @^|  "
+                self.rows[10] = "---|--"
+
                     
