@@ -1,23 +1,30 @@
 from column import Column
+from composition import Composition
 
 class CharGraphics(object):
     
     def __init__(self, composition):
         
         self.measures = []
+        
         self.add_measures(composition)
-        #self.add_tie(Item.c1, 0, 7, 9)
         self.print_sheet()
         
-        
+    
+    def add_measures(self, composition):
+        for i in range(composition.length):
+            measure = self.create_measure(composition, i)
+            self.measures.append(measure)
+            
+            
     def create_measure(self, composition, measure):
         '''
-        Creates one printable measure and returns it as X * 14 matrix, where X is the number of columns,
-        which is determined by the shortest note length. e.g. if shortest note is 1/8, measure contains 8 columns.
+        Creates one printable measure and returns it as X * 15 matrix, where X is the number of columns,
+        which is determined by the shortest note duration. e.g. if shortest note is 1/8, measure consists of 8 columns.
         '''
         
         shortest = 1
-        for item in composition.array:               # e.g. if shortest note is 1/8, measure contains 8 columns
+        for item in composition.items:               # e.g. if shortest note is 1/8, measure contains 8 columns
             if measure == item.measure:              #
                 if item.duration < shortest:         #
                     shortest = item.duration         #
@@ -25,23 +32,15 @@ class CharGraphics(object):
         columns = int(1/shortest) * [None]           # list of columns in this measure
              
         for i in range(len(columns)):                                                               # for each column in measure
-            col = Column(composition.array, composition.beams, measure, (shortest*i) + shortest)    # create new column
+            col = Column(composition.items, composition.beams, measure, (shortest*i) + shortest)    # create new column
             columns[i] = col                                                                        # add to the list of columns of this measure
         
-        measure_matrix = [[None]*15 for i in range(len(columns))]
-        i = 0
-        j = 0
-        for j in range(15):
-            for i in range(len(columns)):
-                measure_matrix[i][j] = columns[i].rows[j]
+        measure_matrix = [[None]*15 for i in range(len(columns))]           # create meatrix for the whole measure
+        for j in range(15):                                                 # 
+            for i in range(len(columns)):                                   #
+                measure_matrix[i][j] = columns[i].rows[j]                   # fill matrix according to list of columns
 
         return measure_matrix
-    
-    
-    def add_measures(self, composition):
-        for i in range(composition.length):
-            measure = self.create_measure(composition, i)
-            self.measures.append(measure)
             
             
     def add_tie(self, pitch, measure, start, stop):
@@ -60,11 +59,11 @@ class CharGraphics(object):
                         if i != 0 or c != 0:
                             whole_row = whole_row + self.measures[k][i][j][c]          # add next char
                 
-                if j in {2,4,6,8,10}: whole_row = whole_row + "---|"
+                if j in {2,4,6,8,10}: whole_row = whole_row + "---|"                   # add measure bar
                 elif j in {3,5,7,9}: whole_row = whole_row + "   |"
                 else: whole_row = whole_row + "    "
                 whole[j] = whole[j] + whole_row
-            if k in {1,3,5,7,9}:
+            if k in {1,3,5,7,9}:                                                       # line break after 2 measures
                 for j in range(15):
                     print(whole[j])
                 whole = [" "] * 15

@@ -24,7 +24,7 @@ def main():
     beam = Beam(notes2)
     Composition.add_beam(composition,beam)
     
-    rest = Item(Item.REST, None, 0, 6/8, 1/32)
+    rest = Item(Item.REST, None, 0, 6/8, 1/8)
     Composition.add_item(composition, rest)
 
     
@@ -47,7 +47,7 @@ def main():
     item7 = Item(Item.NOTE, Item.b1, 1, 7/8, 1/8)
     item8 = Item(Item.NOTE, Item.E, 3, 1, 1/8)
     
-    notes3 = [item7, item5]
+    notes3 = [item2, item5]
     beam = Beam(notes3)
     Composition.add_beam(composition,beam)
 
@@ -59,6 +59,8 @@ def main():
     Composition.add_item(composition,item6)
     Composition.add_item(composition,item7)
     Composition.add_item(composition,item8)
+    
+    Composition.fill_holes(composition)
     
     CharGraphics(composition)
 
