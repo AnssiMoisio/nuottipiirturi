@@ -2,6 +2,7 @@ from item import Item
 from beam import Beam
 from composition import Composition
 from char_graphics import CharGraphics
+from text_file_IO import TextFileIO
 
 def main():
     
@@ -63,5 +64,9 @@ def main():
     Composition.fill_holes(composition)
     
     CharGraphics(composition)
+    
+    
+    asd = TextFileIO()
+    TextFileIO.load_composition(asd, "test_file.txt")
 
 main()

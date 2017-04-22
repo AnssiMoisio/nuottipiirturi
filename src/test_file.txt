@@ -1,0 +1,5 @@
+#NUOTTI
+pitch: C
+measure: 0
+duration: 1/4
+start: 3/4
