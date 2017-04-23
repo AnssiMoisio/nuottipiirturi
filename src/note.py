@@ -1,4 +1,4 @@
-class Item(object):
+class Note(object):
     
     ''' Pitch. Numbers are same in Column.rows '''
     
@@ -19,22 +19,17 @@ class Item(object):
     SYL = 14    #   Hel   -  lo     wo  -    rld
         
     
-    ''' Item type'''
-    NOTE            = 20
-    REST            = 21
-    
-    def __init__(self, item_type, pitch, measure, start, duration):
-        self._set_type(item_type)
+    def __init__(self, pitch, octave, flat, sharp, measure, start, duration):
         self._set_pitch(pitch)
+        self.octave = octave
+        if flat: self.flat = True
+        else: self.flat = False
+        if sharp: self.sharp = True
+        else: self.sharp = False
         self.measure = measure
         self._set_start(start)
         self._set_duration(duration)
         
-    def _set_type(self, item_type):
-        if item_type in [Item.NOTE, Item.REST]:
-            self.item_type = item_type
-        else:
-            raise ValueError("Bad item type given")
         
     def _set_pitch(self, pitch):
         self.pitch = pitch

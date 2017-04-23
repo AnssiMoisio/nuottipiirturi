@@ -1,50 +1,62 @@
-from item import Item
+from note import Note
+from rest import Rest
+from beam import Beam
+from char_graphics import CharGraphics
 
 class Composition(object):
     
     def __init__(self, name, creator, meter, length):
         '''
-        @param items: all notes and rests in arbitrary order
         @param meter: beats per measure
         @param length: length of the melody in measures, integer
         '''
-        self.items = []                         # 
-        self.beams = []
+        self.notes  = []
+        self.rests  = []
+        self.beams  = []
+        self.lyrics = []
         self.creator = creator                  # string
         self.name = name                        # string
-        self.meter = meter                      # only 3/4 or 4/4 for now
-        self.length = length                    # 
+        self.meter = meter
+        self.length = length
         
         
+    def add_note(self, note):
+        self.notes.append(note)
         
-    def add_item(self, item):
-        self.items.append(item)
+    def remove_note(self, note):
+        self.items.remove(note)
+
+    def add_rest(self, rest):
+        self.rests.append(rest)
         
-    def remove_item(self, item):
-        self.items.remove(item)
+    def remove_rest(self, rest):
+        self.rests.remove(rest)
         
     def add_beam(self,beam):
         self.beams.append(beam)
+        
+    def remove_beam(self, beam):
+        self.beams.remove(beam)
         
     def fill_holes(self):
         ''' Fills empty beats with rests. This should be done last.'''
         
         for measure in range(self.length):
             shortest = 1
-            for item in self.items:                         # e.g. if shortest note is 1/8, measure contains 8 columns
-                if measure == item.measure:                 #
-                    if item.duration < shortest:            #
-                        shortest = item.duration            #
+            for note in self.notes:                         # e.g. if shortest note is 1/8, measure contains 8 columns
+                if measure == note.measure:                 #
+                    if note.duration < shortest:            #
+                        shortest = note.duration            #
                         
             for i in range(1, int(1/shortest) + 1):
                 a = 0
-                for item in self.items:
-                    if item.item_type == Item.NOTE and measure == item.measure:
-                        if item.start == i*shortest:
+                for note in self.notes:
+                    if measure == note.measure:
+                        if note.start == i*shortest:
                             a += 1
-                        elif item.start < (i*shortest) and (item.start + item.duration) > (i*shortest):
+                        elif note.start < (i*shortest) and (note.start + note.duration) > (i*shortest):
                             a += 1
                 if a == 0:
-                    rest = Item(Item.REST, None, measure, i*shortest, shortest)       # (item_type, pitch, measure, start, duration)
+                    rest = Rest(measure, i*shortest, shortest)       # (item_type, pitch, measure, start, duration)
                     self.add_item(rest)
                         

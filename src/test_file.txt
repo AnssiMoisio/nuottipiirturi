@@ -1,11 +1,15 @@
 SAVELLYS 1.0 tallennustiedosto
 
+syntaksi:
+nuotit: korkeus, oktaavi, alennus, ylennys, tahti, aloitushetki, kesto
+
 #TIEDOT
 nimi: The Michael Jordan of Drunk Driving
-tekijä: AJJ
+tekija: AJJ
+tahtilaji: 4/4
+pituus: 2
 
 #NUOTIT
-korkeus, tahti, aloitushetki, kesto
-D, 0, 1/8, 1/8
-E, 0, 2/8, 1/8
-A, 0 3/8, 1/4
+D, 0, e, e,  0, 1/8, 1/8
+E, 0, e, e, 0,  2/8, 1/8
+A, 0, e, e, 0,  3/8, 1/4

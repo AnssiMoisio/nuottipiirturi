@@ -1,12 +1,10 @@
 from column import Column
-from composition import Composition
 
 class CharGraphics(object):
     
     def __init__(self, composition):
         
         self.measures = []
-        
         self.add_measures(composition)
         self.print_sheet()
         
@@ -24,16 +22,16 @@ class CharGraphics(object):
         '''
         
         shortest = 1
-        for item in composition.items:               # e.g. if shortest note is 1/8, measure contains 8 columns
-            if measure == item.measure:              #
-                if item.duration < shortest:         #
-                    shortest = item.duration         #
+        for note in composition.notes:               # e.g. if shortest note is 1/8, measure contains 8 columns
+            if measure == note.measure:              #
+                if note.duration < shortest:         #
+                    shortest = note.duration         #
                     
         columns = int(1/shortest) * [None]           # list of columns in this measure
              
-        for i in range(len(columns)):                                                               # for each column in measure
-            col = Column(composition.items, composition.beams, measure, (shortest*i) + shortest)    # create new column
-            columns[i] = col                                                                        # add to the list of columns of this measure
+        for i in range(len(columns)):                                           # for each column in measure
+            col = Column(composition, measure, (shortest*i) + shortest)         # create new column
+            columns[i] = col                                                    # add to the list of columns of this measure
         
         measure_matrix = [[None]*15 for i in range(len(columns))]           # create meatrix for the whole measure
         for j in range(15):                                                 # 
