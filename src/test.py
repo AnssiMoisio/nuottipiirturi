@@ -63,10 +63,9 @@ def main():
     
     Composition.fill_holes(composition)
     
-    CharGraphics(composition)
+    #CharGraphics(composition)
     
     
     asd = TextFileIO()
-    TextFileIO.load_composition(asd, "test_file.txt")
 
 main()
