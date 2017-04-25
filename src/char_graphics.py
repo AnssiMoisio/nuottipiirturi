@@ -6,6 +6,7 @@ class CharGraphics(object):
         
         self.measures = []
         self.add_measures(composition)
+        print(composition.creator,": ",composition.name)
         self.print_sheet()
         
     
@@ -33,8 +34,8 @@ class CharGraphics(object):
             col = Column(composition, measure, (shortest*i) + shortest)         # create new column
             columns[i] = col                                                    # add to the list of columns of this measure
         
-        measure_matrix = [[None]*15 for i in range(len(columns))]           # create meatrix for the whole measure
-        for j in range(15):                                                 # 
+        measure_matrix = [[None]*16 for i in range(len(columns))]           # create meatrix for the whole measure
+        for j in range(16):                                                 # 
             for i in range(len(columns)):                                   #
                 measure_matrix[i][j] = columns[i].rows[j]                   # fill matrix according to list of columns
 
@@ -48,9 +49,9 @@ class CharGraphics(object):
             
     def print_sheet(self):
         self.clef()
-        whole = [" "] * 15
+        whole = [" "] * 16
         for k in range(len(self.measures)):                                            # for each measure
-            for j in range(15):                                                        # for each row
+            for j in range(16):                                                        # for each row
                 whole_row = self.measures[k][0][j][0]                                  # add first char of first column of this row
                 for i in range(len(self.measures[k])):                                 # for each column in matrix
                     for c in range(6):                                                 # for each char
@@ -64,7 +65,7 @@ class CharGraphics(object):
             if k in {1,3,5,7,9}:                                                       # line break after 2 measures
                 for j in range(15):
                     print(whole[j])
-                whole = [" "] * 15
+                whole = [" "] * 16
         if k in {0,2,4,6,8,10}:
             for j in range(15):
                 print(whole[j])
@@ -87,6 +88,7 @@ class CharGraphics(object):
         self.measures[0][0][12][0] = "   \___/      "
         self.measures[0][0][13][0] = "              "
         self.measures[0][0][14][0] = "              "
+        self.measures[0][0][15][0] = "              "
 
 
         

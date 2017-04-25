@@ -14,29 +14,39 @@ class Composition(object):
         self.rests  = []
         self.beams  = []
         self.lyrics = []
-        self.creator = creator                  # string
-        self.name = name                        # string
+        self.creator = creator
+        self.name = name
         self.meter = meter
         self.length = length
         
         
+        
     def add_note(self, note):
+        for rest in self.rests:
+            if rest.start == note.start and rest.measure == note.measure:
+                self.remove_rest(rest.measure, rest.start)
         self.notes.append(note)
         
-    def remove_note(self, note):
-        self.items.remove(note)
+    def remove_note(self, measure, start, pitch):
+        for note in self.notes:
+            if measure == note.measure and note.start == start and pitch == note.pitch:
+                self.items.remove(note)
 
     def add_rest(self, rest):
         self.rests.append(rest)
         
-    def remove_rest(self, rest):
-        self.rests.remove(rest)
+    def remove_rest(self, measure, start):
+        for rest in self.rests:
+            if measure == rest.measure and rest.start == start:
+                self.rests.remove(rest)
         
     def add_beam(self,beam):
         self.beams.append(beam)
         
-    def remove_beam(self, beam):
-        self.beams.remove(beam)
+    def remove_beam(self, measure, start):
+        for beam in self.beams:
+            if measure == beam.measure and beam.start == start:
+                self.rests.remove(beam)
         
     def fill_holes(self):
         ''' Fills empty beats with rests. This should be done last.'''
@@ -58,5 +68,5 @@ class Composition(object):
                             a += 1
                 if a == 0:
                     rest = Rest(measure, i*shortest, shortest)       # (item_type, pitch, measure, start, duration)
-                    self.add_item(rest)
+                    self.add_rest(rest)
                         

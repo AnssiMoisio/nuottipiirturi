@@ -1,6 +1,7 @@
 from corrupted_composition_file_error import *
 from composition import Composition
 from note import Note
+from rest import Rest
 from char_graphics import CharGraphics
 
 class TextFileIO(object):
@@ -22,7 +23,7 @@ class TextFileIO(object):
                 
             # implement allllllll the rest
             CharGraphics(self.comp)
-            mode = input("Lisaa tai poista nuotti, tauko, sanoitus, palkki?\n poistu: esc\n")
+            mode = input("Lisaa tai poista nuotti, tauko, sanoitus, palkki? Poistu: esc\n")
     
     
     def read_file(self):
@@ -49,14 +50,27 @@ class TextFileIO(object):
                         raise CorruptedCompositionFileError("Monta tietoa")
                     else:
                         name, creator, meter, length, current_line = self.parse_tiedot(file)
-                        self.comp = Composition(name, creator, meter, length)   # Creating the composition object
+                        self.comp = Composition(name, creator, meter, length)                   # Creating the composition object
                         
                 if not current_line == None:
                     if current_line[1:7].lower() == 'nuotit':
                         for line in file:
+                            if line[0] == "#":
+                                current_line = line
+                                break
                             self.parse_nuotit(line)
+                       
+                    if current_line[1:6].lower() == 'tauot':
+                        for line in file:
+                            if line[0] == "#":
+                                current_line = line
+                                break
+                            current_line = self.parse_tauot(line)
         
+        file.close()
+        self.comp.fill_holes()
         CharGraphics(self.comp)
+        print(self.comp.rests)
                     
                     
     def parse_tiedot(self, input):
@@ -88,68 +102,70 @@ class TextFileIO(object):
     def parse_nuotit(self, line):
         '''(pitch, octave, flat, sharp, measure, start, duration)'''
         
-        
-        
-        current_line = line
-        if current_line != None:
-            
-            parts = current_line.split(",")
-            
-            if parts[0].strip().lower() in {"a","b","c","d","e","f","g"}:
-                if int(parts[1].strip()) == 0:
-                    octave = 0
-                elif int(parts[1].strip()) == 1:
-                    octave = 1
-                else: raise CorruptedCompositionFileError("Outo oktaavi")
-                if octave == 0:
-                    A = Note.A
-                    B = Note.B
-                    C = Note.C
-                    D = Note.D
-                    E = Note.E
-                    F = Note.F
-                    G = Note.G
-                else:
-                    A = Note.a1
-                    B = Note.b1
-                    C = Note.c1
-                    D = Note.d1
-                    E = Note.e1
-                    F = Note.f1
-                    G = Note.g1
+        if line.strip() != "":
+            parts = line.split(",")
+            if parts[0].strip().lower() in {"a","b","c","d","e","f","g"}:                  
                 if parts[0].strip().lower() == "a":
-                    pitch = A
+                    pitch = Note.A
                 elif parts[0].strip().lower() == "b":
-                    pitch = B
+                    pitch = Note.B
                 elif parts[0].strip().lower() == "c":
-                    pitch = C
+                    pitch = Note.C
                 elif parts[0].strip().lower() == "d":
-                    pitch = D
+                    pitch = Note.D
                 elif parts[0].strip().lower() == "e":
-                    pitch = E
+                    pitch = Note.E
                 elif parts[0].strip().lower() == "f":
-                    pitch = F
+                    pitch = Note.F
                 elif parts[0].strip().lower() == "g":
-                    pitch = G
+                    pitch = Note.G
                 
-                if parts[2].strip().lower() == "k": flat = True
+                if int(parts[1].strip()) in {0,1,2}:
+                    octave = int(parts[1].strip())
+                else: raise CorruptedCompositionFileError("Outo oktaavi")
+                pitch =  pitch - (octave*7)                                                 # pitch
+                
+                if parts[2].strip().lower() == "k": flat = True                             # flat
                 else: flat = False
-                if parts[3].strip().lower() == "k": sharp = True
+                if parts[3].strip().lower() == "k": sharp = True                            # sharp
                 else: sharp = False
                 
-                
-                measure = int(parts[4].strip())
+                measure = int(parts[4].strip())                                             # measure
                 start = parts[5].split("/")
-                start = float(int(start[0].strip()) / int(start[1].strip()))
+                start = float(int(start[0].strip()) / int(start[1].strip()))                # start
                 duration = parts[6].split("/")
-                duration = float(int(duration[0].strip()) / int(duration[1].strip()))
+                duration = float(int(duration[0].strip()) / int(duration[1].strip()))       # duration
                 
-                print(pitch, octave, flat, sharp, measure, start, duration)
                 note = Note(pitch, octave, flat, sharp, measure, start, duration)
                 Composition.add_note(self.comp, note)
                   
-            elif current_line[0] == '#':
-                return current_line
             else: 
                 raise CorruptedCompositionFileError("Outo savelkorkeus")
             
+            
+    def parse_tauot(self, line):
+        
+        if line.strip() != "":
+            parts = line.split(",")
+            measure = int(parts[0].strip())                                             # measure
+            start = parts[1].split("/")
+            start = float(int(start[0].strip()) / int(start[1].strip()))                # start
+            duration = parts[2].split("/")
+            if len(duration) == 1:
+                duration = float(duration[0].strip())
+            elif len(duration) == 2:
+                duration = float(int(duration[0].strip()) / int(duration[1].strip()))
+            else:
+                raise CorruptedCompositionFileError("Huono kesto")
+            
+            rest = Rest(measure, start, duration)
+            Composition.add_rest(self.comp, rest)
+    
+        
+        
+        
+        
+        
+        
+        
+        

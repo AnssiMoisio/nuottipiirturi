@@ -35,11 +35,10 @@ class Beam(object):
             self.pitch = pitch
         
         if b:
-            self.pitch = 14
+            self.pitch = 15
         elif a:
             self.pitch = 0
 
-    
     
     def add_start(self):
         ref = 1

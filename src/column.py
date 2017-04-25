@@ -1,4 +1,3 @@
-
 class Column(object):
     
     def __init__(self, composition, measure, start):
@@ -8,11 +7,11 @@ class Column(object):
         self.beams = []
         self.rests = []               
         self.find_items(composition)
-        self.rows = [[None]*6 for i in range(15)]       # 14 rows of the stave, 6 characters wide column
+        self.rows = [[None]*6 for i in range(16)]       # 14 rows of the stave, 6 characters wide column
         self.add_rows()                                 # empty rows
         self.add_stems()
-        self.add_notes()
-        self.add_rests()
+        self.create_heads()
+        self.create_rests()
         self.create_beams()
         
 
@@ -25,7 +24,7 @@ class Column(object):
                 
         for rest in comp.rests:
             if rest.measure == self.measure and rest.start == self.start:
-                self.rest.append(rest)
+                self.rests.append(rest)
                     
         for note in self.notes:
             for rest in self.rests:
@@ -41,13 +40,13 @@ class Column(object):
         ''' Adds empty rows for this column. '''
         
         for j in range(6):
-            for i in range(0,15):
+            for i in range(0,16):
                 self.rows[i][j] = " "
             for i in range(2,11,2):
                 self.rows[i][j] = "-"
 
                 
-    def add_notes(self):
+    def create_heads(self):
         '''
         Adds note heads in the character list 'rows'
         according to the list 'notes'
@@ -82,12 +81,11 @@ class Column(object):
                 
         count = len(flagged)
         if count == 1:
-            if flagged[0].duration < 1:
-                self.create_stem(flagged[0], flagged[0])
-                self.create_flag(flagged[0], flagged[0])
+            if flagged[0].pitch > 5: a = 1
+            else: a = -1
+            self.create_flag(flagged[0].pitch, flagged[0].pitch - a*4, flagged[0].duration)
         
         elif count > 1:
-
             for i in range(count - 1):                                       #sort notes from lowest to highest
                 for i in range(count - 1):
                     if flagged[i].pitch > flagged[i+1].pitch:
@@ -95,58 +93,64 @@ class Column(object):
                         flagged[i] = flagged[i+1]
                         flagged[i+1] = temp
                         
-            for i in range(flagged[0].pitch, flagged[count-1].pitch):
-                self.rows[i][3] = "|"
+            self.create_stem(flagged[0].pitch, flagged[count-1].pitch)
+
             
             if flagged[0].pitch > 5:
-                self.create_stem(flagged[0],flagged[0])
-                self.create_flag(flagged[0],flagged[0])
+                self.create_flag(flagged[0].pitch, flagged[0].pitch - 4, flagged[0].duration)
+                
+            elif flagged[count - 1].pitch < 11:
+                self.create_flag(flagged[count-1].pitch, flagged[count-1].pitch + 4, flagged[count-1].duration)
+            
+            else:
+                self.create_flag(flagged[0].pitch, 0, flagged[0].duration)
                     
         for note in beamed:
             for beam in self.beams:
                 if note in beam.notes:
-                    for k in range(beam.pitch, note.pitch):
-                        self.rows[k][3] = "|"
+                    self.create_stem(beam.pitch, note.pitch)
     
 
-    def create_stem(self, note, ref):
-        if ref.pitch > 5: a = 1                         # stem points up
+    def create_stem(self, head, peak):
+        if peak > head:
+            temp = peak
+            peak = head
+            head = temp + 1
+        for k in range(peak, head):
+            if self.rows[k][3] not in {"@","(",")","O","="}:
+                self.rows[k][3] = "|"
+                
+                
+    def create_flag(self, head, peak, duration): 
+        if peak < head: a = 1                           # stem points up
         else: a = -1                                    # stem points down
-
-        if note.duration < 1:
-            for k in range(1,5):
-                self.rows[note.pitch - k*a][3] = "|"
-                
-                
-    def create_flag(self, note, ref):
-        if ref.pitch > 5: a = 1                         # stem points up
-        else: a = -1                                    # stem points down
-                
-        if note.duration == 1/8:
+        
+        self.create_stem(head, peak)
+        
+        if duration == 1/8:
             if a == 1:
-                self.rows[note.pitch - 2*a][4] = "/"
-                self.rows[note.pitch - 3*a][4] = "\\"
-                self.rows[note.pitch - 4*a][3] = "\\"
+                self.rows[peak]    [3]  = "\\"
+                self.rows[peak + 1][4]  = "\\"
+                self.rows[peak + 2][4]  = "/"
             else:
-                self.rows[note.pitch - 2*a][4] = "\\"
-                self.rows[note.pitch - 3*a][4] = "/"
-                self.rows[note.pitch - 4*a][3] = "/"
+                self.rows[peak - 2][4]  = "\\"
+                self.rows[peak - 1][4]  = "/"
+                self.rows[peak]    [3]  = "/"
                 
-        elif note.duration == 1/16:
+        elif duration == 1/16:
             if a == 1:
-                self.rows[note.pitch - 1*a][4] = "/"
-                self.rows[note.pitch - 2*a][4] = "\\"
-                self.rows[note.pitch - 3*a][4] = "\\"
-                self.rows[note.pitch - 4*a][3] = "\\"
+                self.rows[peak]    [3] = "\\"
+                self.rows[peak + 1][4] = "\\"
+                self.rows[peak + 2][4] = "\\"
+                self.rows[peak + 3][4] = "/"
             else:
-                self.rows[note.pitch - 1*a][4] = "\\"
-                self.rows[note.pitch - 2*a][4] = "/"
-                self.rows[note.pitch - 3*a][4] = "/"
-                self.rows[note.pitch - 4*a][3] = "/"
+                self.rows[peak - 3][4]  = "\\"
+                self.rows[peak - 2][4]  = "/"
+                self.rows[peak - 1][4]  = "/"
+                self.rows[peak]    [3]  = "/"
         
         
     def create_beams(self):
-        
         for beam in self.beams:
             if beam.measure == self.measure:
                 if beam.start < self.start and beam.end > self.start:
@@ -162,7 +166,7 @@ class Column(object):
                         self.rows[beam.pitch][i] = "="
                         
                         
-    def add_rests(self):
+    def create_rests(self):
         for rest in self.rests:
             if rest.duration ==         4:
                 self.rows[4] = "--##--"
