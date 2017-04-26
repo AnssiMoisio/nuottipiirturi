@@ -2,6 +2,7 @@ from corrupted_composition_file_error import *
 from composition import Composition
 from note import Note
 from rest import Rest
+from beam import Beam
 from char_graphics import CharGraphics
 
 class TextFileIO(object):
@@ -66,11 +67,17 @@ class TextFileIO(object):
                                 current_line = line
                                 break
                             current_line = self.parse_tauot(line)
+                            
+                    if current_line[1:7].lower() == 'palkit':
+                        for line in file:
+                            if line[0] == "#":
+                                current_line = line
+                                break
+                            current_line = self.parse_palkit(line)
         
         file.close()
         self.comp.fill_holes()
         CharGraphics(self.comp)
-        print(self.comp.rests)
                     
                     
     def parse_tiedot(self, input):
@@ -144,7 +151,6 @@ class TextFileIO(object):
             
             
     def parse_tauot(self, line):
-        
         if line.strip() != "":
             parts = line.split(",")
             measure = int(parts[0].strip())                                             # measure
@@ -160,12 +166,46 @@ class TextFileIO(object):
             
             rest = Rest(measure, start, duration)
             Composition.add_rest(self.comp, rest)
-    
-        
-        
-        
-        
-        
-        
-        
+            
+            
+    def parse_palkit(self, line):
+        print("asda")
+        if line.strip() != "":
+            parts = line.split(",")
+            measure = int(parts[0].strip())
+            measurenotes = []
+            notes = []
+            
+            for note in self.comp.notes:
+                if note.measure == measure:
+                    measurenotes.append(note)
+            
+            count = len(measurenotes)
+            for i in range(count - 1):                                #sort notes from first to last start and lowest to highest pitch
+                for i in range(count - 1):
+                    if measurenotes[i].start > measurenotes[i+1].start:
+                        temp = self.comp.notes[i]
+                        measurenotes[i] = measurenotes[i+1]
+                        measurenotes[i+1] = temp
+                        
+                    elif measurenotes[i].start == measurenotes[i+1].start and measurenotes[i].pitch > measurenotes[i+1].pitch:
+                        temp = self.comp.notes[i]
+                        self.comp.notes[i] = self.comp.notes[i+1]
+                        self.comp.notes[i+1] = temp
+                
+            note_parts = parts[1].split(":")
+            for note in note_parts:
+                try:
+                    notesort = int(note.strip())
+                except ValueError:
+                    raise CorruptedCompositionFileError("Omituinen nuotti palkille")
+                
+                notes.append(measurenotes[notesort])
+                
+        beam = Beam(notes)
+        Composition.add_beam(self.comp, beam)
+                    
+            
+                
+                
         
