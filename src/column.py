@@ -1,3 +1,5 @@
+from composition import Composition
+
 class Column(object):
     
     def __init__(self, composition, measure, start):
@@ -29,7 +31,8 @@ class Column(object):
         for note in self.notes:
             for rest in self.rests:
                 if note.start == rest.start:
-                    raise TypeError("Rest and note at same beat")
+                    Composition.remove_rest(comp, rest.measure, rest.start)
+                    print("Nuotti ja tauko paallekain. Tauko poistettu.")
                 
         for beam in comp.beams:
             if beam.measure == self.measure:

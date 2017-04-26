@@ -30,9 +30,15 @@ class Composition(object):
     def remove_note(self, measure, start, pitch):
         for note in self.notes:
             if measure == note.measure and note.start == start and pitch == note.pitch:
-                self.items.remove(note)
+                self.notes.remove(note)
 
     def add_rest(self, rest):
+        for old in self.rests:
+            if rest.measure == old.measure:
+                if rest.start == old.start:
+                    self.remove_rest(old.measure, old.start)
+                elif old.start < rest.start and (old.duration + old.start) > rest.start:
+                    old.duration = rest.start - old.start
         self.rests.append(rest)
         
     def remove_rest(self, measure, start):
