@@ -48,7 +48,7 @@ class CharGraphics(object):
             
             
     def print_sheet(self):
-        self.clef()
+        #self.clef()
         whole = [" "] * 16
         for k in range(len(self.measures)):                                            # for each measure
             for j in range(16):                                                        # for each row

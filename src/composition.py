@@ -1,7 +1,5 @@
 from note import Note
 from rest import Rest
-from beam import Beam
-from char_graphics import CharGraphics
 
 class Composition(object):
     
@@ -52,10 +50,10 @@ class Composition(object):
     def remove_beam(self, measure, start):
         for beam in self.beams:
             if measure == beam.measure and beam.start == start:
-                self.rests.remove(beam)
+                self.beams.remove(beam)
         
     def fill_holes(self):
-        ''' Fills empty beats with rests. This should be done last.'''
+        ''' Fills empty beats with rests.'''
         
         for measure in range(self.length):
             shortest = 1
@@ -71,6 +69,12 @@ class Composition(object):
                         if note.start == i*shortest:
                             a += 1
                         elif note.start < (i*shortest) and (note.start + note.duration) > (i*shortest):
+                            a += 1
+                for rest in self.rests:
+                    if measure == rest.measure:
+                        if rest.start == i*shortest:
+                            a += 1
+                        elif rest.start < (i*shortest) and (rest.start + rest.duration) > (i*shortest):
                             a += 1
                 if a == 0:
                     rest = Rest(measure, i*shortest, shortest)       # (item_type, pitch, measure, start, duration)

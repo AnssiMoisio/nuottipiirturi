@@ -4,21 +4,28 @@ from note import Note
 from rest import Rest
 from beam import Beam
 from char_graphics import CharGraphics
+from fractions import Fraction
 
 class TextFileIO(object):
 
     def __init__(self):
         self.comp = None
+        self.commentblock = "\n#KOMMENTIT\n"
         self.keyboard_input()
+        
         
         
     def keyboard_input(self):
         self.file_name = input("Anna savellystiedoston nimi\n")
         self.read_file()
-        mode = input("Lisaa tai poista nuotti/tauko/palkki? Sulje ohjelma: quit\n")
+        mode = input("Lisaa tai poista nuotti/tauko/palkki? 'lisaa nuotti'\nTayta tyhjat kohdat tauoilla: 'tayta'\n'tallenna'\nSulje ohjelma: 'quit'\n")
         line = None
         while mode != "quit":
-            if mode.lower().strip() == "lisaa nuotti":
+            
+            if mode.lower().strip() == "tallenna":
+                self.write_file()
+            
+            elif mode.lower().strip() == "lisaa nuotti":
                 line = input("syntaksi: korkeus, oktaavi, alennus k/e, ylennys k/e, tahti, aloitushetki, kesto\nTulosta: esc\n")
                 while (1):
                     if line.strip() == "esc": break
@@ -30,10 +37,10 @@ class TextFileIO(object):
                 while (1):
                     if line.strip() == "esc": break
                     try:
-                        self.remove_note(line)
+                        if self.remove_note(line):
+                            print("Nuotti poistettu. Anna seuraava poistettava nuotti tai poistu komennolla esc")
                     except ValueError:
                         print("Talla jarjestysnumerolla ei ole nuottia. Numerointi alkaa luvusta 0.")
-                            
                     line = input()
             
             elif mode.lower().strip() == "lisaa tauko":
@@ -67,9 +74,12 @@ class TextFileIO(object):
                     self.remove_beam(line)
                     line = input()
                 
-            self.comp.fill_holes()
+            elif mode.lower().strip() == "tayta":
+                self.comp.fill_holes()
+                
+            
             CharGraphics(self.comp)
-            mode = input("Lisaa tai poista nuotti/tauko/palkki? Sulje ohjelma: quit\n")
+            mode = input("Anna komento\n")
     
     
     def read_file(self):
@@ -77,6 +87,7 @@ class TextFileIO(object):
         file = open(self.file_name, "r")
         
         current_line = file.readline()
+        self.header = current_line
         header_parts = current_line.split(" ")
 
         if header_parts[0] != "SAVELLYS":
@@ -86,45 +97,131 @@ class TextFileIO(object):
             raise CorruptedCompositionFileError("Unknown file type")
         
         for line in file:
-            current_line = line
-            
-            if current_line[0] == "#":
-                line_parts = current_line.split(" ")
+            ref = False
+            count = 0
+            while line[0] == "#" or ref:
+                count += 1
+                if count > 10: break
                 
-                if line_parts[0].strip().lower() == '#tiedot':
+                if line[1:7].lower() == 'tiedot':
                     if self.comp != None:
                         raise CorruptedCompositionFileError("Monta tietoa")
                     else:
-                        name, creator, meter, length, current_line = self.parse_tiedot(file)
+                        name, creator, meter, length, line = self.parse_tiedot(file)
                         self.comp = Composition(name, creator, meter, length)                   # Creating the composition object
                         
-                if not current_line == None:
-                    if current_line[1:7].lower() == 'nuotit':
-                        for line in file:
-                            if line[0] == "#":
-                                current_line = line
-                                break
+                if line[1:10].lower() == 'kommentit':
+                    
+                    for line in file:
+                        if line[0] == "#":
+                            ref = True
+                            break
+                        else:
+                            ref = False
+                            self.commentblock = self.commentblock + line
+                        
+                elif line[1:7].lower() == 'nuotit':
+                    for line in file:
+                        if line[0] == "#":
+                            ref = True
+                            break
+                        else:
+                            ref = False
                             self.parse_nuotit(line)
-                       
-                    if current_line[1:6].lower() == 'tauot':
-                        for line in file:
-                            if line[0] == "#":
-                                current_line = line
-                                break
-                            current_line = self.parse_tauot(line)
+                   
+                elif line[1:6].lower() == 'tauot':
+                    for line in file:
+                        if line[0] == "#":
+                            ref = True
+                            break
+                        else:
+                            ref = False
+                            self.parse_tauot(line)
+                        
+                elif line[1:7].lower() == 'palkit':
+                    for line in file:
+                        if line[0] == "#":
+                            ref = True
+                            break
+                        else:
+                            ref = False
+                            self.parse_palkit(line)
                             
-                    if current_line[1:7].lower() == 'palkit':
-                        for line in file:
-                            if line[0] == "#":
-                                current_line = line
-                                break
-                            current_line = self.parse_palkit(line)
+                elif line[1:9].lower() == 'sanoitus':
+                    for line in file:
+                        if line[0] == "#":
+                            ref = True
+                            break
+                        else:
+                            ref = False
+                            self.parse_sanoitus(line)
+                    
         
         file.close()
-        self.comp.fill_holes()
         CharGraphics(self.comp)
-                    
-                    
+    
+        
+    def write_file(self):
+        
+        asd = self.header
+        asd = asd + "\n#TIEDOT\n"
+        asd = asd +  "nimi: " + self.comp.name + "\ntekija: " + self.comp.creator + "\npituus: " + str(self.comp.length) + "\ntahtilaji: " + self.comp.meter + "\n"
+        asd = asd + self.commentblock
+        asd = asd + "\n#NUOTIT\n"
+        for note in self.comp.notes:
+            if note.pitch + (note.octave*7) == Note.A:
+                a = "A"
+            elif note.pitch + (note.octave*7) == Note.B:
+                a = "B"
+            elif note.pitch + (note.octave*7) == Note.C:
+                a = "C"
+            elif note.pitch + (note.octave*7) == Note.D:
+                a = "D"
+            elif note.pitch + (note.octave*7) == Note.E:
+                a = "E"
+            elif note.pitch + (note.octave*7) == Note.F:
+                a = "F"
+            elif note.pitch + (note.octave*7) == Note.G:
+                a = "G"
+            b = str(note.octave)
+            if note.flat: c = "k"
+            else: c = "e"
+            if note.sharp: d = "k"
+            else: d = "e"
+            e = str(note.measure)
+            fract = Fraction(note.start)
+            f = str(fract.numerator) + "/" + str(fract.denominator)
+            if note.duration < 1:
+                g = "1/" + str(int(1/note.duration))
+            else: g = str(note.duration)
+            asd = asd + a+", "+b+", "+c+", "+d+", "+e+", "+f+", "+g+"\n"
+            
+        asd = asd + "\n#TAUOT\n"    
+        
+        for rest in self.comp.rests:
+            e = str(rest.measure)
+            fract = Fraction(rest.start)
+            f = str(fract.numerator) + "/" + str(fract.denominator)
+            if rest.duration < 1:
+                g = "1/" + str(int(1/rest.duration))
+            else: g = str(rest.duration)
+            asd = asd +e+", "+f+", "+g+"\n"
+            
+        asd = asd + "\n#PALKIT\n"    
+            
+        for beam in self.comp.beams:
+            a = str(beam.measure)
+            b = str(self.sort_measurenotes(beam.measure).index(beam.notes[0]))
+            for i in range(1,len(beam.notes)):
+                b = b + ":" + str(self.sort_measurenotes(beam.measure).index(beam.notes[i]))
+            asd = asd + a + ", " + b + "\n"
+            
+        
+        save_file = input("Tallennustiedosto:\n")
+        file = open(save_file, "w")
+        file.write(asd)
+        file.close()
+            
     def parse_tiedot(self, input):
         creator = None
         name = None
@@ -205,6 +302,50 @@ class TextFileIO(object):
             else: 
                 raise CorruptedCompositionFileError("Outo savelkorkeus")
             
+            
+    def parse_tauot(self, line):
+        if line.strip() != "":
+            parts = line.split(",")
+            measure = int(parts[0].strip())                                             # measure
+            start = parts[1].split("/")
+            start = float(int(start[0].strip()) / int(start[1].strip()))                # start
+            duration = parts[2].split("/")
+            if len(duration) == 1:
+                duration = float(duration[0].strip())
+            elif len(duration) == 2:
+                duration = float(int(duration[0].strip()) / int(duration[1].strip()))
+            else:
+                raise CorruptedCompositionFileError("Huono kesto")
+            
+            rest = Rest(measure, start, duration)
+            Composition.add_rest(self.comp, rest)
+            
+            
+            
+    def parse_palkit(self, line):
+        if line.strip() != "":
+            parts = line.split(",")
+            measure = int(parts[0].strip())
+            measurenotes = self.sort_measurenotes(measure)
+            notes = []
+                
+            note_parts = parts[1].split(":")
+            for note in note_parts:
+                try:
+                    notesort = int(note.strip())
+                except ValueError:
+                    raise CorruptedCompositionFileError("Omituinen nuotti palkille")
+                
+                notes.append(measurenotes[notesort])
+                
+        beam = Beam(notes)
+        Composition.add_beam(self.comp, beam)
+        
+        
+    def parse_sanoitus(self, line):
+        '''implement'''
+        
+            
     def remove_note(self, line):
         if line.strip() != "":
             parts = line.split(",")
@@ -213,12 +354,10 @@ class TextFileIO(object):
             
             try:
                 notesort = int(parts[1].strip())
-            except ValueError:
-                print("Huono nuotti. Yrita uudestaan.")
-            try:
                 note = measurenotes[notesort]
                 Composition.remove_note(self.comp, measure, note.start, note.pitch)
-            except IndexError:
+                return True
+            except:
                 print("talla jarjestysluvulla ei ole nuottia. Numerointi alkaa luvusta 0. Yrita uudestaan tai poistu komennolla esc.")
                 
     def remove_rest(self, line):
@@ -251,25 +390,10 @@ class TextFileIO(object):
             
             for beam in self.comp.beams:
                 if beam.start == start and beam.measure == measure:
-                    Composition.remove_beam(self, measure, start)
+                    Composition.remove_beam(self.comp, measure, start)
             
             
-    def parse_tauot(self, line):
-        if line.strip() != "":
-            parts = line.split(",")
-            measure = int(parts[0].strip())                                             # measure
-            start = parts[1].split("/")
-            start = float(int(start[0].strip()) / int(start[1].strip()))                # start
-            duration = parts[2].split("/")
-            if len(duration) == 1:
-                duration = float(duration[0].strip())
-            elif len(duration) == 2:
-                duration = float(int(duration[0].strip()) / int(duration[1].strip()))
-            else:
-                raise CorruptedCompositionFileError("Huono kesto")
-            
-            rest = Rest(measure, start, duration)
-            Composition.add_rest(self.comp, rest)
+
             
             
     def sort_measurenotes(self, measure):
@@ -296,27 +420,5 @@ class TextFileIO(object):
         
         return measurenotes
             
-            
-    def parse_palkit(self, line):
-        if line.strip() != "":
-            parts = line.split(",")
-            measure = int(parts[0].strip())
-            measurenotes = self.sort_measurenotes(measure)
-            notes = []
-                
-            note_parts = parts[1].split(":")
-            for note in note_parts:
-                try:
-                    notesort = int(note.strip())
-                except ValueError:
-                    raise CorruptedCompositionFileError("Omituinen nuotti palkille")
-                
-                notes.append(measurenotes[notesort])
-                
-        beam = Beam(notes)
-        Composition.add_beam(self.comp, beam)
+
                     
-            
-                
-                
-        
