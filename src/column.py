@@ -7,7 +7,8 @@ class Column(object):
         self.start = start                              # e.g. 1/8 - 8/8, moment in measure
         self.notes = []                                 # notes that start in this column
         self.beams = []
-        self.rests = []               
+        self.rests = []
+        self.lyrics = []           
         self.find_items(composition)
         self.rows = [[None]*6 for i in range(16)]       # 14 rows of the stave, 6 characters wide column
         self.add_rows()                                 # empty rows
@@ -15,6 +16,7 @@ class Column(object):
         self.create_heads()
         self.create_rests()
         self.create_beams()
+        self.add_lyrics()
         
 
     def find_items(self, comp):
@@ -37,6 +39,10 @@ class Column(object):
         for beam in comp.beams:
             if beam.measure == self.measure:
                 self.beams.append(beam)
+                
+        for lyric in comp.lyrics:
+            if lyric.measure == self.measure and lyric.start == self.start:
+                self.lyrics.append(lyric)
         
          
     def add_rows(self):
@@ -68,6 +74,11 @@ class Column(object):
             elif note.duration == 1/4 or note.duration == 1/8 or note.duration == 1/16:
                 self.rows[note.pitch][2] = "@"
                 self.rows[note.pitch][3] = "@"
+                
+            if note.flat:
+                self.rows[note.pitch][0] = "b"
+            elif note.sharp:
+                self.rows[note.pitch][0] = "#"
             
             
     def add_stems(self):
@@ -172,39 +183,60 @@ class Column(object):
     def create_rests(self):
         for rest in self.rests:
             if rest.duration ==         4:
-                self.rows[4] = "--##--"
-                self.rows[5] = "  ##  "
-                self.rows[6] = "--##--"
-                self.rows[7] = "  ##  "
-                self.rows[8] = "--##--"
+                for i in range (2,4):
+                    for j in range(4,9):
+                        self.rows[j][i] = "#"
             elif rest.duration ==       2:
-                self.rows[4] = "--##--"
-                self.rows[5] = "  ##  "
-                self.rows[6] = "--##--"
+                for i in range (2,4):
+                    for j in range(4,7):
+                        self.rows[j][i] = "#"
             elif rest.duration ==       1:
-                self.rows[4] = "-####-"
-                self.rows[5] = " #### "
+                for i in range (1,5):
+                    for j in range(4,6):
+                        self.rows[j][i] = "#"
             elif rest.duration ==       1/2:
-                self.rows[5] = " #### "
-                self.rows[6] = "-####-"
+                for i in range (1,5):
+                    for j in range(5,7):
+                        self.rows[j][i] = "#"
             elif rest.duration ==       1/4:
-                self.rows[4] = "--\---"
-                self.rows[5] = "  //  "
-                self.rows[6] = "--\---"
-                self.rows[7] = "  C   "
+                self.rows[4][2] = "\\"
+                self.rows[5][2], self.rows[5][2] = "//"
+                self.rows[6][2] = "\\"
+                self.rows[7][2] = "C"
             elif rest.duration ==       1/8:
-                self.rows[5] = "  @^/ "
-                self.rows[6] = "---/--"
-                self.rows[7] = "  /   "
+                self.rows[5][2],self.rows[5][3],self.rows[5][4] = "@^/"
+                self.rows[6][3] = "/"
+                self.rows[7][2] = "/"
             elif rest.duration ==       1/16:
-                self.rows[5] = "  @^/ "
-                self.rows[6] = "---/--"
-                self.rows[7] = "@^/   "
-                self.rows[8] = "-/----"
+                self.rows[5][2],self.rows[5][3],self.rows[5][4] = "@^/"
+                self.rows[6][3] = "/"
+                self.rows[7][0],self.rows[7][1],self.rows[7][2] = "@^/"
+                self.rows[8][1] = "/"
             elif rest.duration ==       1/32:
-                self.rows[5]  = " @^|  "
-                self.rows[6]  = "---|--"
-                self.rows[7]  = " @^|  "
-                self.rows[8]  = "---|--"
-                self.rows[9]  = " @^|  "
-                self.rows[10] = "---|--"
+                self.rows[5][2],self.rows[5][3],self.rows[5][4] = "@^|"
+                self.rows[6][3]  = "|"
+                self.rows[7][0],self.rows[7][1],self.rows[7][2] = "@^|"
+                self.rows[8][3]  = "|"
+                self.rows[9]  = "?"
+                self.rows[10] = "?"
+
+
+    def add_lyrics(self):
+        if len(self.lyrics) > 1:
+            print("Paallekkaisia sanoituksia")
+        
+        elif len(self.lyrics) == 1:
+            lenn = len(self.lyrics[0].string)
+            if lenn > 6:
+                print("Liian pitka tavu.")
+            elif lenn > 4:
+                for i in range(lenn):
+                    self.rows[15][i] = self.lyrics[0].string[i]
+            elif lenn > 2:
+                for i in range(1,lenn +1):
+                    self.rows[15][i] = self.lyrics[0].string[i-1]
+            else:
+                for i in range(2,lenn +2):
+                    self.rows[15][i] = self.lyrics[0].string[i-2]
+
+

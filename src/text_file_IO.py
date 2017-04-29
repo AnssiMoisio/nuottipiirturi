@@ -3,6 +3,7 @@ from composition import Composition
 from note import Note
 from rest import Rest
 from beam import Beam
+from lyrics import Lyrics
 from char_graphics import CharGraphics
 from fractions import Fraction
 
@@ -25,11 +26,28 @@ class TextFileIO(object):
             if mode.lower().strip() == "tallenna":
                 self.write_file()
             
+            elif mode.lower().strip() == "muuta tietoja":
+                line = input("esim: 'tekija: The Beatles")
+                while (1):
+                    if line.strip() == "esc": break
+                    try:
+                        if self.parse_tiedot_sub(line):
+                            print("Tiedot lisatty. Anna seuraava tai poistu komennolla esc.")
+                        else:
+                            print("tietoja ei lisatty")
+                    except:
+                        print("Yrita uudestaan.")
+                    line = input()
+            
             elif mode.lower().strip() == "lisaa nuotti":
                 line = input("syntaksi: korkeus, oktaavi, alennus k/e, ylennys k/e, tahti, aloitushetki, kesto\nTulosta: esc\n")
                 while (1):
                     if line.strip() == "esc": break
-                    self.parse_nuotit(line)
+                    try:
+                        if self.parse_nuotit(line):
+                            print("Nuotti lisatty. Anna seuraava tai poistu komennolla esc.")
+                    except:
+                        print("Yrita uudestaan.")
                     line = input()
                 
             elif mode.lower().strip() == "poista nuotti":
@@ -47,13 +65,22 @@ class TextFileIO(object):
                 line = input("syntaksi: tahti, aloitushetki, kesto\nPoistu ja tulosta: esc\n")
                 while (1):
                     if line.strip() == "esc": break
-                    self.parse_tauot(line)
+                    try:
+                        if self.parse_tauot(line):
+                            print("Tauko lisatty.")
+                    except:
+                        print("Yrita uudestaan")
                     line = input()
                         
             elif mode.lower().strip() == "poista tauko":
                 line = input("syntaksi: tahti, aloitushetki\nesim: 1,3/8\nPoistu ja tulosta: esc\n")
                 while (1):
                     if line.strip() == "esc": break
+                    try:
+                        if self.remove_rest(line):
+                            print("Tauko poistettu. Anna seuraava poistettava tauko tai poistu komennolla esc")
+                    except:
+                        print("yrita uudestaan")
                     self.remove_rest(line)
                     line = input()
                         
@@ -62,7 +89,8 @@ class TextFileIO(object):
                 while (1):
                     if line.strip() == "esc": break
                     try:
-                        self.parse_palkit(line)
+                        if self.parse_palkit(line):
+                            print("Palkki lisatty.")
                     except ValueError:
                         print("Talla jarjestysnumerolla ei ole nuottia. Numerointi alkaa luvusta 0.")
                     line = input()
@@ -71,7 +99,11 @@ class TextFileIO(object):
                 line = input("syntaksi: tahti, aloitushetki\nesim: 1,3/8\nPoistu ja tulosta: esc\n")
                 while(1):
                     if line.strip() == "esc": break
-                    self.remove_beam(line)
+                    try:
+                        if self.remove_beam(line):
+                            print("Palkki poistettu.")
+                    except:
+                        print("Yrita uudestaan.")
                     line = input()
                 
             elif mode.lower().strip() == "tayta":
@@ -107,8 +139,9 @@ class TextFileIO(object):
                     if self.comp != None:
                         raise CorruptedCompositionFileError("Monta tietoa")
                     else:
-                        name, creator, meter, length, line = self.parse_tiedot(file)
-                        self.comp = Composition(name, creator, meter, length)                   # Creating the composition object
+                        self.comp = Composition(None,None,None,None)                   # Creating the composition object
+                        line = self.parse_tiedot(file)
+                        
                         
                 if line[1:10].lower() == 'kommentit':
                     
@@ -222,31 +255,34 @@ class TextFileIO(object):
         file.write(asd)
         file.close()
             
-    def parse_tiedot(self, input):
-        creator = None
-        name = None
-        meter = None
-        length = 0
-        
-        for line in input:
-            line_parts = line.split(":")
             
+    def parse_tiedot(self, input):
+        for line in input:
+            self.parse_tiedot_sub(line)
+            if line[0] == '#':
+                return line
+        return line
+    
+    
+    def parse_tiedot_sub(self, line):
+        
+        if line.strip() != "":
+            line_parts = line.split(":")
             if line_parts[0].strip().lower() == 'tekija':
-                creator = line_parts[1].strip()
-                
+                self.comp.creator = line_parts[1].strip()
+                return True
+            
             elif line_parts[0].strip().lower() == 'nimi':
-                name = line_parts[1].strip()
-                
+                self.comp.name = line_parts[1].strip()
+                return True
+            
             elif line_parts[0].strip().lower() == 'tahtilaji':
-                meter = line_parts[1].strip()
+                self.comp.meter = line_parts[1].strip()
+                return True
                 
             elif line_parts[0].strip().lower() == 'pituus':
-                length = int( line_parts[1].strip() )
-                
-            if line[0] == '#':
-                return name, creator, meter, length, line
-                
-        return name, creator, meter, length, line
+                self.comp.length = int( line_parts[1].strip() )
+                return True
             
             
     def parse_nuotit(self, line):
@@ -304,96 +340,121 @@ class TextFileIO(object):
             
             
     def parse_tauot(self, line):
-        if line.strip() != "":
-            parts = line.split(",")
-            measure = int(parts[0].strip())                                             # measure
-            start = parts[1].split("/")
-            start = float(int(start[0].strip()) / int(start[1].strip()))                # start
-            duration = parts[2].split("/")
-            if len(duration) == 1:
-                duration = float(duration[0].strip())
-            elif len(duration) == 2:
-                duration = float(int(duration[0].strip()) / int(duration[1].strip()))
-            else:
-                raise CorruptedCompositionFileError("Huono kesto")
-            
-            rest = Rest(measure, start, duration)
-            Composition.add_rest(self.comp, rest)
-            
+        try:
+            if line.strip() != "":
+                parts = line.split(",")
+                measure = int(parts[0].strip())                                             # measure
+                start = parts[1].split("/")
+                start = float(int(start[0].strip()) / int(start[1].strip()))                # start
+                duration = parts[2].split("/")
+                if len(duration) == 1:
+                    duration = float(duration[0].strip())
+                elif len(duration) == 2:
+                    duration = float(int(duration[0].strip()) / int(duration[1].strip()))
+                else:
+                    raise CorruptedCompositionFileError("Huono kesto")
+                
+                rest = Rest(measure, start, duration)
+                Composition.add_rest(self.comp, rest)
+        except:
+            print("Huono tauko.")
             
             
     def parse_palkit(self, line):
-        if line.strip() != "":
-            parts = line.split(",")
-            measure = int(parts[0].strip())
-            measurenotes = self.sort_measurenotes(measure)
-            notes = []
-                
-            note_parts = parts[1].split(":")
-            for note in note_parts:
-                try:
-                    notesort = int(note.strip())
-                except ValueError:
-                    raise CorruptedCompositionFileError("Omituinen nuotti palkille")
-                
-                notes.append(measurenotes[notesort])
-                
-        beam = Beam(notes)
-        Composition.add_beam(self.comp, beam)
+        try:
+            if line.strip() != "":
+                parts = line.split(",")
+                measure = int(parts[0].strip())
+                measurenotes = self.sort_measurenotes(measure)
+                notes = []
+                    
+                note_parts = parts[1].split(":")
+                for note in note_parts:
+                    try:
+                        notesort = int(note.strip())
+                    except ValueError:
+                        raise CorruptedCompositionFileError("Omituinen nuotti palkille")
+                    
+                    notes.append(measurenotes[notesort])
+                    
+                beam = Beam(notes)
+                Composition.add_beam(self.comp, beam)
+        except:
+            print("Huono palkki")
         
         
     def parse_sanoitus(self, line):
-        '''implement'''
+        try:
+            if line.strip() != "":
+                parts = line.split(",")
+                measure = int(parts[0].strip())                                             # measure
+                start = parts[1].split("/")
+                start = float(int(start[0].strip()) / int(start[1].strip()))                # start
+                string = parts[2].strip()
+                
+                lyric = Lyrics(measure, start, string)
+                Composition.add_lyric(self.comp, lyric)
+        except:
+            print("Huono sanoitustavu.")
         
             
     def remove_note(self, line):
-        if line.strip() != "":
-            parts = line.split(",")
-            measure = int(parts[0].strip())
-            measurenotes = self.sort_measurenotes(measure)
-            
-            try:
-                notesort = int(parts[1].strip())
-                note = measurenotes[notesort]
-                Composition.remove_note(self.comp, measure, note.start, note.pitch)
-                return True
-            except:
-                print("talla jarjestysluvulla ei ole nuottia. Numerointi alkaa luvusta 0. Yrita uudestaan tai poistu komennolla esc.")
+        try:
+            if line.strip() != "":
+                parts = line.split(",")
+                measure = int(parts[0].strip())
+                measurenotes = self.sort_measurenotes(measure)
+                
+                try:
+                    notesort = int(parts[1].strip())
+                    note = measurenotes[notesort]
+                    Composition.remove_note(self.comp, measure, note.start, note.pitch)
+                    return True
+                except:
+                    print("talla jarjestysluvulla ei ole nuottia. Numerointi alkaa luvusta 0. Yrita uudestaan tai poistu komennolla esc.")
+        except:
+            print("Huono nuotti.")
+                
                 
     def remove_rest(self, line):
-        if line.strip() != "":
-            parts = line.split(",")
-            measure = int(parts[0].strip())
-            start = parts[1].split("/")
-            if len(start) == 1:
-                start = float(start[0].strip())
-            elif len(start) == 2:
-                start = float(int(start[0].strip()) / int(start[1].strip()))
-            else:
-                raise CorruptedCompositionFileError("Huono alkamishetki.")
+        try:
+            if line.strip() != "":
+                parts = line.split(",")
+                measure = int(parts[0].strip())
+                start = parts[1].split("/")
+                if len(start) == 1:
+                    start = float(start[0].strip())
+                elif len(start) == 2:
+                    start = float(int(start[0].strip()) / int(start[1].strip()))
+                else:
+                    raise CorruptedCompositionFileError("Huono alkamishetki.")
+                
+                for rest in self.comp.rests:
+                    if rest.start == start and rest.measure == measure:
+                        Composition.remove_rest(self.comp, measure, start)
+                        return True
+        except:
+            print("Huono tauko.")
             
-            for rest in self.comp.rests:
-                if rest.start == start and rest.measure == measure:
-                    Composition.remove_rest(self.comp, measure, start)
-                    
+            
     def remove_beam(self, line):
-        if line.strip() != "":
-            parts = line.split(",")
-            measure = int(parts[0].strip())
-            start = parts[1].split("/")
-            if len(start) == 1:
-                start = float(start[0].strip())
-            elif len(start) == 2:
-                start = float(int(start[0].strip()) / int(start[1].strip()))
-            else:
-                raise CorruptedCompositionFileError("Huono alkamishetki.")
-            
-            for beam in self.comp.beams:
-                if beam.start == start and beam.measure == measure:
-                    Composition.remove_beam(self.comp, measure, start)
-            
-            
-
+        try:
+            if line.strip() != "":
+                parts = line.split(",")
+                measure = int(parts[0].strip())
+                start = parts[1].split("/")
+                if len(start) == 1:
+                    start = float(start[0].strip())
+                elif len(start) == 2:
+                    start = float(int(start[0].strip()) / int(start[1].strip()))
+                else:
+                    raise CorruptedCompositionFileError("Huono alkamishetki.")
+                
+                for beam in self.comp.beams:
+                    if beam.start == start and beam.measure == measure:
+                        Composition.remove_beam(self.comp, measure, start)
+        except:
+            print("Huono palkki.")
             
             
     def sort_measurenotes(self, measure):

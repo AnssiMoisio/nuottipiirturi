@@ -1,4 +1,3 @@
-from note import Note
 from rest import Rest
 
 class Composition(object):
@@ -18,11 +17,14 @@ class Composition(object):
         self.length = length
         
         
-        
     def add_note(self, note):
         for rest in self.rests:
-            if rest.start == note.start and rest.measure == note.measure:
-                self.remove_rest(rest.measure, rest.start)
+            if rest.measure == note.measure:
+                if rest.start == note.start:
+                    self.remove_rest(rest.measure, rest.start)
+                elif rest.start < note.start and (rest.duration + rest.start) > note.start:
+                    rest.duration = note.start - rest.start
+                    
         self.notes.append(note)
         
     def remove_note(self, measure, start, pitch):
@@ -51,6 +53,9 @@ class Composition(object):
         for beam in self.beams:
             if measure == beam.measure and beam.start == start:
                 self.beams.remove(beam)
+                
+    def add_lyric(self, lyric):
+        self.lyrics.append(lyric)
         
     def fill_holes(self):
         ''' Fills empty beats with rests.'''
@@ -61,6 +66,10 @@ class Composition(object):
                 if measure == note.measure:                 #
                     if note.duration < shortest:            #
                         shortest = note.duration            #
+            for rest in self.rests:
+                if measure == rest.measure:              #
+                    if rest.duration < shortest:         #
+                        shortest = rest.duration         #
                         
             for i in range(1, int(1/shortest) + 1):
                 a = 0

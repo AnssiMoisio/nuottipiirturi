@@ -1,0 +1,55 @@
+SAVELLYS 1.0 tallennustiedosto
+
+#TIEDOT
+nimi: Yesterday
+tekija: The Beatles
+pituus: 7
+tahtilaji: 4/4
+
+#KOMMENTIT
+Syntaksi:
+nuotit:
+<korkeus, oktaavi, alennus, ylennys, tahti, aloitushetki, kesto>
+tauot:
+<tahti, aloitushetki, kesto>
+palkit:
+<tahti, jarjestysnumero nuotille aloitushetken ja korkeuden mukaan>
+esim: 1,0:1:3
+
+#NUOTIT
+G,0,e,e,0,1/8,1/8
+F,0,e,e,0,2/8,1/8
+F,0,e,e,0,3/8,3/4
+
+A,1,e,e,1,3/8,1/8
+B,1,e,e,1,4/8,1/8
+C,1,e,k,1,5/8,1/8
+D,1,e,e,1,6/8,1/8
+E,1,e,e,1,7/8,1/8
+F,1,e,e,1,8/8,1/8
+
+#TAUOT
+1,1/8,1/4
+
+#PALKIT
+0,0:1
+1,0:1
+1,2:3:4:5
+
+#SANOITUS
+0,1/8,Yes -
+0,2/8,ter -
+0,3/8,day
+
+1,3/8,all
+1,4/8,my
+1,5/8,troub
+1,6/8,- les
+1,7/8,seemed
+1,8/8,so
+
+
+
+
+
+
