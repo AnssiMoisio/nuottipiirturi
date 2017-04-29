@@ -25,9 +25,9 @@ class Beam(object):
         b = False
         for note in self.notes:
             if note.pitch < 5:
-                if note.pitch == 0:
-                    b = True
                 a = True
+                if note.pitch < 2:
+                    b = True
                 break
             sum += note.pitch - 5
         if not a:
@@ -35,7 +35,7 @@ class Beam(object):
             self.pitch = pitch
         
         if b:
-            self.pitch = 15
+            self.pitch = 13
         elif a:
             self.pitch = 0
 

@@ -15,7 +15,6 @@ class TextFileIO(object):
         self.keyboard_input()
         
         
-        
     def keyboard_input(self):
         self.file_name = input("Anna savellystiedoston nimi\n")
         self.read_file()
@@ -115,9 +114,7 @@ class TextFileIO(object):
     
     
     def read_file(self):
-
         file = open(self.file_name, "r")
-        
         current_line = file.readline()
         self.header = current_line
         header_parts = current_line.split(" ")
@@ -139,12 +136,10 @@ class TextFileIO(object):
                     if self.comp != None:
                         raise CorruptedCompositionFileError("Monta tietoa")
                     else:
-                        self.comp = Composition(None,None,None,None)                   # Creating the composition object
+                        self.comp = Composition(None,None,None,None,[],[])                   # Creating the composition object
                         line = self.parse_tiedot(file)
                         
-                        
                 if line[1:10].lower() == 'kommentit':
-                    
                     for line in file:
                         if line[0] == "#":
                             ref = True
@@ -188,8 +183,7 @@ class TextFileIO(object):
                         else:
                             ref = False
                             self.parse_sanoitus(line)
-                    
-        
+                            
         file.close()
         CharGraphics(self.comp)
     
@@ -281,7 +275,47 @@ class TextFileIO(object):
                 return True
                 
             elif line_parts[0].strip().lower() == 'pituus':
-                self.comp.length = int( line_parts[1].strip() )
+                self.comp.length = int(line_parts[1].strip())
+                return True
+
+            elif line_parts[0].strip().lower() == 'alennetut':
+                parts = line_parts[1].split(",")
+                for part in parts:
+                    if part.strip().lower() in {"a","b","c","d","e","f","g"}:                  
+                        if part.strip().lower() == "a":
+                            self.comp.flats.append(Note.a1)
+                        elif part.strip().lower() == "b":
+                            self.comp.flats.append(Note.b1)
+                        elif part.strip().lower() == "c":
+                            self.comp.flats.append(Note.c1)
+                        elif part.strip().lower() == "d":
+                            self.comp.flats.append(Note.d1)
+                        elif part.strip().lower() == "e":
+                            self.comp.flats.append(Note.e1)
+                        elif part.strip().lower() == "f":
+                            self.comp.flats.append(Note.f1)
+                        elif part.strip().lower() == "g":
+                            self.comp.flats.append(Note.g1)
+                return True
+
+            elif line_parts[0].strip().lower() == 'korotetut':
+                parts = line_parts[1].split(",")
+                for part in parts:
+                    if part.strip().lower() in {"a","b","c","d","e","f","g"}:                  
+                        if part.strip().lower() == "a":
+                            self.comp.sharps.append(Note.a1)
+                        elif part.strip().lower() == "b":
+                            self.comp.sharps.append(Note.b1)
+                        elif part.strip().lower() == "c":
+                            self.comp.sharps.append(Note.c1)
+                        elif part.strip().lower() == "d":
+                            self.comp.sharps.append(Note.d1)
+                        elif part.strip().lower() == "e":
+                            self.comp.sharps.append(Note.e1)
+                        elif part.strip().lower() == "f":
+                            self.comp.sharps.append(Note.f1)
+                        elif part.strip().lower() == "g":
+                            self.comp.sharps.append(Note.g1)
                 return True
             
             
@@ -481,5 +515,4 @@ class TextFileIO(object):
         
         return measurenotes
             
-
                     

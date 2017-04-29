@@ -7,10 +7,11 @@ class CharGraphics(object):
         self.measures = []
         self.add_measures(composition)
         print(composition.creator,": ",composition.name)
-        self.print_sheet()
+        self.print_sheet(composition)
         
     
     def add_measures(self, composition):
+        
         for i in range(composition.length):
             measure = self.create_measure(composition, i)
             self.measures.append(measure)
@@ -47,19 +48,19 @@ class CharGraphics(object):
             
             
     def add_tie(self, pitch, measure, start, stop):
+        
         for i in range(start,stop):
             self.measures[measure][i][pitch] = self.tie1
             
             
-    def print_sheet(self):
+    def print_sheet(self, composition):
         whole = [" "] * 16
         for k in range(len(self.measures)):                                            # for each measure
-            if k in {0,2,4,6,8,10,12,14}: self.clef(k)
+            if k in {0,3,6,9,12,15,18}: self.clef(k,composition)
             for j in range(16):                                                        # for each row
                 whole_row = ""                                                          
                 for i in range(len(self.measures[k])):                                 # for each column in matrix
                     for c in range(6):                                                 # for each char
-                        
                         whole_row = whole_row + self.measures[k][i][j][c]              # add next char
                 
                 if j in {2,4,6,8,10}: whole_row = whole_row + "---|"                   # add measure bar
@@ -67,33 +68,46 @@ class CharGraphics(object):
                 else: whole_row = whole_row + "    "
                 whole[j] = whole[j] + whole_row
             
-            if k in {1,3,5,7,9,11,13,15}:                                                       # line break after 2 measures
+            if k in {2,5,8,11,14,17}:                                                       # line break after 3 measures
                 for j in range(16):
                     print(whole[j])
                 whole = [" "] * 16
-        if k in {0,2,4,6,8,10,12,14,16}:
-            for j in range(15):
+                print("\n\n\n")
+        if k not in {2,5,8,11,14,17}:
+            for j in range(16):
                 print(whole[j])
+            print("\n\n\n")
 
                 
-                
-    def clef(self,k):
-        self.measures[k][0][0][0]  = "          " +self.measures[k][0][0][0]
-        self.measures[k][0][1][0]  = "     /'\  " +self.measures[k][0][1][0]
-        self.measures[k][0][2][0]  = "----|--/--" +self.measures[k][0][2][0]
-        self.measures[k][0][3][0]  = "    | /   " +self.measures[k][0][3][0]
-        self.measures[k][0][4][0]  = "----\/----" +self.measures[k][0][4][0]
-        self.measures[k][0][5][0]  = "    /\    " +self.measures[k][0][5][0]
-        self.measures[k][0][6][0]  = "---/-|----" +self.measures[k][0][6][0]
-        self.measures[k][0][7][0]  = "  / _|_   " +self.measures[k][0][7][0]
-        self.measures[k][0][8][0]  = "-|-\-|-\--" +self.measures[k][0][8][0]
-        self.measures[k][0][9][0]  = " \___|_/  " +self.measures[k][0][9][0]
-        self.measures[k][0][10][0] = "------\---" +self.measures[k][0][10][0]
-        self.measures[k][0][11][0] = "  @@   \  " +self.measures[k][0][11][0]
-        self.measures[k][0][12][0] = "   \___/  " +self.measures[k][0][12][0]
-        self.measures[k][0][13][0] = "          " +self.measures[k][0][13][0]
-        self.measures[k][0][14][0] = "          " +self.measures[k][0][14][0]
-        self.measures[k][0][15][0] = "          " +self.measures[k][0][15][0]
-
-
+    def clef(self,k,composition):
+        list = [None]*16
         
+        list[0]  = "            "
+        list[1]  = "     /'\    "
+        list[2]  = "----|--/----"
+        list[3]  = "    | /     "
+        list[4]  = "----\/------"
+        list[5]  = "    /\      " 
+        list[6]  = "---/-|------"
+        list[7]  = "  / _|_     "
+        list[8]  = "-|-\-|-\----"
+        list[9]  = " \___|_/    "
+        list[10] = "------\-----" 
+        list[11] = "  @@   \    "
+        list[12] = "   \___/    "
+        list[13] = "            "
+        list[14] = "            "
+        list[15] = "            "
+        for j in range(16):
+            if j in composition.flats:
+                list[j]  = list[j] + "b"
+            elif j in composition.sharps:
+                list[j] = list[j] + "#"
+            elif j in {2,4,6,8,10}:
+                list[j] = list[j] + "-"
+            else:
+                list[j] = list[j] + " "
+                
+        for j in range(16):
+            self.measures[k][0][j][0] = list[j] + self.measures[k][0][j][0]
+            

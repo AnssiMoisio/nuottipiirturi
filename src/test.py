@@ -14,7 +14,6 @@ class Test(unittest.TestCase):
     def setUp(self):
         self.human_IO = TextFileIO()
         
-        
     def test_example(self):
         '''skip'''
 

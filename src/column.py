@@ -13,7 +13,7 @@ class Column(object):
         self.rows = [[None]*6 for i in range(16)]       # 14 rows of the stave, 6 characters wide column
         self.add_rows()                                 # empty rows
         self.add_stems()
-        self.create_heads()
+        self.create_heads(composition)
         self.create_rests()
         self.create_beams()
         self.add_lyrics()
@@ -55,7 +55,7 @@ class Column(object):
                 self.rows[i][j] = "-"
 
                 
-    def create_heads(self):
+    def create_heads(self,comp):
         '''
         Adds note heads in the character list 'rows'
         according to the list 'notes'
@@ -63,22 +63,29 @@ class Column(object):
         
         for note in self.notes:
 
-            if note.duration == 1:
+            if note.duration in {1,3/2}:
                 self.rows[note.pitch][2] = "("
                 self.rows[note.pitch][3] = ")"
             
-            elif note.duration == 1/2:
+            elif note.duration  in {1/2, 3/4}:
                 self.rows[note.pitch][2] = "O"
                 self.rows[note.pitch][3] = "O"
             
-            elif note.duration == 1/4 or note.duration == 1/8 or note.duration == 1/16:
+            elif note.duration in {1/4,1/8,1/16,1/32,3/8,3/16,3/32}:
                 self.rows[note.pitch][2] = "@"
                 self.rows[note.pitch][3] = "@"
+                
+            if note.duration in {3/2,3/4,3/8,3/16,3/32}:
+                self.rows[note.pitch][4] = "."
                 
             if note.flat:
                 self.rows[note.pitch][0] = "b"
             elif note.sharp:
                 self.rows[note.pitch][0] = "#"
+            elif note.pitch in comp.flats:
+                self.rows[note.pitch][0] = "X"
+            elif note.pitch in comp.sharps:
+                self.rows[note.pitch][0] = "X"
             
             
     def add_stems(self):
@@ -200,7 +207,7 @@ class Column(object):
                         self.rows[j][i] = "#"
             elif rest.duration ==       1/4:
                 self.rows[4][2] = "\\"
-                self.rows[5][2], self.rows[5][2] = "//"
+                self.rows[5][2], self.rows[5][3] = "//"
                 self.rows[6][2] = "\\"
                 self.rows[7][2] = "C"
             elif rest.duration ==       1/8:
@@ -217,8 +224,8 @@ class Column(object):
                 self.rows[6][3]  = "|"
                 self.rows[7][0],self.rows[7][1],self.rows[7][2] = "@^|"
                 self.rows[8][3]  = "|"
-                self.rows[9]  = "?"
-                self.rows[10] = "?"
+                self.rows[9][3]  = "?"
+                self.rows[10][3] = "?"
 
 
     def add_lyrics(self):

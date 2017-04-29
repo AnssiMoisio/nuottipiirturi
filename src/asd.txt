@@ -5,6 +5,7 @@ nimi: The Michael Jordan of Drunk Driving
 tekija: Andrew Jackson Jihad
 pituus: 6
 tahtilaji: 4/4
+alennetut:a,d,c
 
 #KOMMENTIT
 Syntaksi:

@@ -2,7 +2,7 @@ from rest import Rest
 
 class Composition(object):
     
-    def __init__(self, name, creator, meter, length):
+    def __init__(self, name, creator, meter, length, flats, sharps):
         '''
         @param meter: beats per measure
         @param length: length of the melody in measures, integer
@@ -15,7 +15,9 @@ class Composition(object):
         self.name = name
         self.meter = meter
         self.length = length
-        
+        self.flats  = flats
+        self.sharps = sharps        
+    
         
     def add_note(self, note):
         for rest in self.rests:
