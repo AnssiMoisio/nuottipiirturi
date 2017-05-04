@@ -9,14 +9,24 @@ alennetut: B
 
 
 #KOMMENTIT
+
 Syntaksi:
+
 nuotit:
 <korkeus, oktaavi, alennus, ylennys, tahti, aloitushetki, kesto>
+esim: A, 1, k, e, 1, 3/8, 1/8
+
 tauot:
 <tahti, aloitushetki, kesto>
+esim: 1, 1/8, 1/4
+
 palkit:
 <tahti, jarjestysnumero nuotille aloitushetken ja korkeuden mukaan>
-esim: 1,0:1:3
+esim: 1, 0:1:3
+
+sanoitus:
+<tahti, aloitushetki, tavu>
+esim: 0, 1/8, Yes
 
 #NUOTIT
 G,0,e,e,0,1/8,1/8
@@ -37,7 +47,7 @@ D,1,e,e,   2   ,3/8,3/4
 D,1,e,e,3,3/8,1/8
 D,1,e,e,3,4/8,1/8
 C,1,e,e,3,5/8,1/8
-B,1,e,e,3,6/8,1/8
+B,1,k,e,3,6/8,1/8
 A,1,e,e,3,7/8,1/8
 G,0,e,e,3,8/8,1/8
 
@@ -65,7 +75,8 @@ A,1,e,e,6,5/8,1/2
 1,0:1
 1,2:3:4:5
 2,0:1
-3,0:1:2:3
+3,0:1
+3,2:3
 3,4:5
 4,0:1
 6,1:2

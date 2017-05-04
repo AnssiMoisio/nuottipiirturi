@@ -18,7 +18,7 @@ class TextFileIO(object):
     def keyboard_input(self):
         self.file_name = input("Anna savellystiedoston nimi\n")
         self.read_file()
-        mode = input("Lisaa tai poista nuotti/tauko/palkki? 'lisaa nuotti'\nTayta tyhjat kohdat tauoilla: 'tayta'\n'tallenna'\nSulje ohjelma: 'quit'\n")
+        mode = input("Lisaa tai poista nuotti/tauko/palkki? esim: lisaa nuotti\nTayta tyhjat kohdat tauoilla: tayta\nTallenna: 'tallenna'\nSulje ohjelma: 'quit'\n")
         line = None
         while mode != "quit":
             
@@ -39,7 +39,7 @@ class TextFileIO(object):
                     line = input()
             
             elif mode.lower().strip() == "lisaa nuotti":
-                line = input("syntaksi: korkeus, oktaavi, alennus k/e, ylennys k/e, tahti, aloitushetki, kesto\nTulosta: esc\n")
+                line = input("syntaksi: korkeus, oktaavi, alennus k/e, ylennys k/e, tahti, aloitushetki, kesto.\nEsim: A, 1, k, e, 1, 3/8, 1/8\nTulosta: esc\n")
                 while (1):
                     if line.strip() == "esc": break
                     try:
@@ -61,7 +61,7 @@ class TextFileIO(object):
                     line = input()
             
             elif mode.lower().strip() == "lisaa tauko":
-                line = input("syntaksi: tahti, aloitushetki, kesto\nPoistu ja tulosta: esc\n")
+                line = input("syntaksi: tahti, aloitushetki, kesto\nesim: 1, 1/8, 1/4\nPoistu ja tulosta: esc\n")
                 while (1):
                     if line.strip() == "esc": break
                     try:
@@ -84,23 +84,23 @@ class TextFileIO(object):
                     line = input()
                         
             elif mode.lower().strip() == "lisaa palkki":
-                line = input("syntaksi:tahti, <jarjestysnumero nuotille, aloitushetken; korkeuden mukaan>\nPoistu ja tulosta: esc\n")
+                line = input("syntaksi:tahti, <jarjestysnumero nuotille, aloitushetken; korkeuden mukaan>\nesim: 1, 0:1:3\nPoistu ja tulosta: esc\n")
                 while (1):
                     if line.strip() == "esc": break
                     try:
                         if self.parse_palkit(line):
-                            print("Palkki lisatty.")
+                            print("Palkki lisatty. Anna seuraava tai poistu komennolla esc.")
                     except ValueError:
                         print("Talla jarjestysnumerolla ei ole nuottia. Numerointi alkaa luvusta 0.")
                     line = input()
                         
             elif mode.lower().strip() == "poista palkki":
-                line = input("syntaksi: tahti, aloitushetki\nesim: 1,3/8\nPoistu ja tulosta: esc\n")
+                line = input("syntaksi: tahti, aloitushetki\nesim: 1,3/8\nesim: 1, 0:1:3\nPoistu ja tulosta: esc\n")
                 while(1):
                     if line.strip() == "esc": break
                     try:
                         if self.remove_beam(line):
-                            print("Palkki poistettu.")
+                            print("Palkki poistettu. Anna seuraava tai poistu komennolla esc.")
                     except:
                         print("Yrita uudestaan.")
                     line = input()
@@ -321,56 +321,59 @@ class TextFileIO(object):
             
     def parse_nuotit(self, line):
         '''(pitch, octave, flat, sharp, measure, start, duration)'''
+        try:
         
-        if line.strip() != "":
-            parts = line.split(",")
-            if parts[0].strip().lower() in {"a","b","c","d","e","f","g"}:                  
-                if parts[0].strip().lower() == "a":
-                    pitch = Note.A
-                elif parts[0].strip().lower() == "b":
-                    pitch = Note.B
-                elif parts[0].strip().lower() == "c":
-                    pitch = Note.C
-                elif parts[0].strip().lower() == "d":
-                    pitch = Note.D
-                elif parts[0].strip().lower() == "e":
-                    pitch = Note.E
-                elif parts[0].strip().lower() == "f":
-                    pitch = Note.F
-                elif parts[0].strip().lower() == "g":
-                    pitch = Note.G
-                
-                if int(parts[1].strip()) in {0,1,2}:
-                    octave = int(parts[1].strip())
-                else: raise CorruptedCompositionFileError("Outo oktaavi")
-                pitch =  pitch - (octave*7)                                                 # pitch
-                
-                if parts[2].strip().lower() == "k": flat = True                             # flat
-                else: flat = False
-                if parts[3].strip().lower() == "k": sharp = True                            # sharp
-                else: sharp = False
-                
-                measure = int(parts[4].strip())                                             # measure
-                start = parts[5].split("/")
-                if len(start) == 1:
-                    start = float(start[0].strip())
-                elif len(start) == 2:
-                    start = float(int(start[0].strip()) / int(start[1].strip()))
-                else:
-                    raise CorruptedCompositionFileError("Huono alkamishetki.")
-                duration = parts[6].split("/")
-                if len(duration) == 1:
-                    duration = float(duration[0].strip())
-                elif len(duration) == 2:
-                    duration = float(int(duration[0].strip()) / int(duration[1].strip()))
-                else:
-                    raise CorruptedCompositionFileError("Huono kesto")
-                
-                note = Note(pitch, octave, flat, sharp, measure, start, duration)
-                Composition.add_note(self.comp, note)
+            if line.strip() != "":
+                parts = line.split(",")
+                if parts[0].strip().lower() in {"a","b","c","d","e","f","g"}:                  
+                    if parts[0].strip().lower() == "a":
+                        pitch = Note.A
+                    elif parts[0].strip().lower() == "b":
+                        pitch = Note.B
+                    elif parts[0].strip().lower() == "c":
+                        pitch = Note.C
+                    elif parts[0].strip().lower() == "d":
+                        pitch = Note.D
+                    elif parts[0].strip().lower() == "e":
+                        pitch = Note.E
+                    elif parts[0].strip().lower() == "f":
+                        pitch = Note.F
+                    elif parts[0].strip().lower() == "g":
+                        pitch = Note.G
+                    
+                    if int(parts[1].strip()) in {0,1,2}:
+                        octave = int(parts[1].strip())
+                    else: raise CorruptedCompositionFileError("Outo oktaavi")
+                    pitch =  pitch - (octave*7)                                                 # pitch
+                    
+                    if parts[2].strip().lower() == "k": flat = True                             # flat
+                    else: flat = False
+                    if parts[3].strip().lower() == "k": sharp = True                            # sharp
+                    else: sharp = False
+                    
+                    measure = int(parts[4].strip())                                             # measure
+                    start = parts[5].split("/")
+                    if len(start) == 1:
+                        start = float(start[0].strip())
+                    elif len(start) == 2:
+                        start = float(int(start[0].strip()) / int(start[1].strip()))
+                    else:
+                        raise CorruptedCompositionFileError("Huono alkamishetki.")
+                    duration = parts[6].split("/")
+                    if len(duration) == 1:
+                        duration = float(duration[0].strip())
+                    elif len(duration) == 2:
+                        duration = float(int(duration[0].strip()) / int(duration[1].strip()))
+                    else:
+                        raise CorruptedCompositionFileError("Huono kesto")
+                    
+                    note = Note(pitch, octave, flat, sharp, measure, start, duration)
+                    Composition.add_note(self.comp, note)
+                    return True
+                else: print("Huono savelkorkeus")
                   
-            else: 
-                raise CorruptedCompositionFileError("Outo savelkorkeus")
+        except:
+            print("Huono nuotti.")
             
             
     def parse_tauot(self, line):
@@ -390,6 +393,7 @@ class TextFileIO(object):
                 
                 rest = Rest(measure, start, duration)
                 Composition.add_rest(self.comp, rest)
+                return True
         except:
             print("Huono tauko.")
             
@@ -413,6 +417,7 @@ class TextFileIO(object):
                     
                 beam = Beam(notes)
                 Composition.add_beam(self.comp, beam)
+                return True
         except:
             print("Huono palkki")
         
@@ -428,6 +433,7 @@ class TextFileIO(object):
                 
                 lyric = Lyrics(measure, start, string)
                 Composition.add_lyric(self.comp, lyric)
+                return True
         except:
             print("Huono sanoitustavu.")
         
@@ -439,13 +445,10 @@ class TextFileIO(object):
                 measure = int(parts[0].strip())
                 measurenotes = self.sort_measurenotes(measure)
                 
-                try:
-                    notesort = int(parts[1].strip())
-                    note = measurenotes[notesort]
-                    Composition.remove_note(self.comp, measure, note.start, note.pitch)
-                    return True
-                except:
-                    print("talla jarjestysluvulla ei ole nuottia. Numerointi alkaa luvusta 0. Yrita uudestaan tai poistu komennolla esc.")
+                notesort = int(parts[1].strip())
+                note = measurenotes[notesort]
+                Composition.remove_note(self.comp, measure, note.start, note.pitch)
+                return True
         except:
             print("Huono nuotti.")
                 
@@ -487,6 +490,7 @@ class TextFileIO(object):
                 for beam in self.comp.beams:
                     if beam.start == start and beam.measure == measure:
                         Composition.remove_beam(self.comp, measure, start)
+                        return True
         except:
             print("Huono palkki.")
             

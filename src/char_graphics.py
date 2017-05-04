@@ -6,7 +6,6 @@ class CharGraphics(object):
         
         self.measures = []
         self.add_measures(composition)
-        print(composition.creator,": ",composition.name)
         self.print_sheet(composition)
         
     
@@ -19,7 +18,7 @@ class CharGraphics(object):
             
     def create_measure(self, composition, measure):
         '''
-        Creates one printable measure and returns it as X * 15 matrix, where X is the number of columns,
+        Creates one printable measure and returns it as X * 16 matrix, where X is the number of columns,
         which is determined by the shortest note duration. e.g. if shortest note is 1/8, measure consists of 8 columns.
         '''
         
@@ -54,6 +53,7 @@ class CharGraphics(object):
             
             
     def print_sheet(self, composition):
+        print(composition.creator,": ",composition.name)
         whole = [" "] * 16
         for k in range(len(self.measures)):                                            # for each measure
             if k in {0,3,6,9,12,15,18}: self.clef(k,composition)
@@ -80,6 +80,7 @@ class CharGraphics(object):
 
                 
     def clef(self,k,composition):
+        
         list = [None]*16
         
         list[0]  = "            "

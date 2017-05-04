@@ -17,7 +17,7 @@ class Note(object):
     C = 12      # #-@@-
     B = 13      #
     A = 14      #
-    SYL = 15    #   Hel   -  lo     wo  -    rld
+    SYL = 15    #   Ly -       rics
         
     
     def __init__(self, pitch, octave, flat, sharp, measure, start, duration):

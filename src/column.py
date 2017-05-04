@@ -79,9 +79,11 @@ class Column(object):
                 self.rows[note.pitch][4] = "."
                 
             if note.flat:
-                self.rows[note.pitch][0] = "b"
+                if note.pitch not in comp.flats:
+                    self.rows[note.pitch][0] = "b"
             elif note.sharp:
-                self.rows[note.pitch][0] = "#"
+                if note.pitch not in comp.sharps:
+                    self.rows[note.pitch][0] = "#"
             elif note.pitch in comp.flats:
                 self.rows[note.pitch][0] = "X"
             elif note.pitch in comp.sharps:
@@ -89,6 +91,8 @@ class Column(object):
             
             
     def add_stems(self):
+        ''' Adds stems.'''
+        
         beamed = []
         flagged = []
         for note in self.notes:
