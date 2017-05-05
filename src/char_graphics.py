@@ -101,9 +101,9 @@ class CharGraphics(object):
         list[15] = "            "
         for j in range(16):
             if j in composition.flats:
-                list[j]  = list[j] + "b"
+                list[j]  = list[j] + "b"      # flats
             elif j in composition.sharps:
-                list[j] = list[j] + "#"
+                list[j] = list[j] + "#"         #sharps
             elif j in {2,4,6,8,10}:
                 list[j] = list[j] + "-"
             else:
