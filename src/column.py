@@ -97,11 +97,11 @@ class Column(object):
         flagged = []
         for note in self.notes:
             for beam in self.beams:
-                if note in beam.notes:
+                if note in beam.notes and note.duration < 1:
                     beamed.append(note)
                     
         for note in self.notes:
-            if note not in beamed:
+            if note not in beamed and note.duration < 1:
                 flagged.append(note)
                 
         count = len(flagged)
@@ -152,7 +152,7 @@ class Column(object):
         
         self.create_stem(head, peak)
         
-        if duration == 1/8:
+        if duration == 1/8 or duration == 3/16:
             if a == 1:
                 self.rows[peak]    [3]  = "\\"
                 self.rows[peak + 1][4]  = "\\"
@@ -162,7 +162,7 @@ class Column(object):
                 self.rows[peak - 1][4]  = "/"
                 self.rows[peak]    [3]  = "/"
                 
-        elif duration == 1/16:
+        elif duration == 1/16 or duration == 3/32:
             if a == 1:
                 self.rows[peak]    [3] = "\\"
                 self.rows[peak + 1][4] = "\\"
@@ -249,5 +249,3 @@ class Column(object):
             else:
                 for i in range(2,lenn +2):
                     self.rows[15][i] = self.lyrics[0].string[i-2]
-
-

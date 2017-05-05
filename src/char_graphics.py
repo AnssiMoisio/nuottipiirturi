@@ -111,4 +111,3 @@ class CharGraphics(object):
                 
         for j in range(16):
             self.measures[k][0][j][0] = list[j] + self.measures[k][0][j][0]
-            

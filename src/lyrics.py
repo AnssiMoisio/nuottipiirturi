@@ -9,5 +9,6 @@ class Lyrics(object):
     def _set_start(self, start):
         self.start = start
         
+        
     def _set_measure(self, measure):
         self.measure = measure

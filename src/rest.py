@@ -1,4 +1,4 @@
-class Rest:
+class Rest(object):
     
     def __init__(self, measure, start, duration):
         self._set_measure(measure)
@@ -13,4 +13,3 @@ class Rest:
         
     def _set_measure(self, measure):
         self.measure = measure
-        

@@ -243,7 +243,6 @@ class TextFileIO(object):
                 b = b + ":" + str(self.sort_measurenotes(beam.measure).index(beam.notes[i]))
             asd = asd + a + ", " + b + "\n"
             
-        
         save_file = input("Tallennustiedosto:\n")
         file = open(save_file, "w")
         file.write(asd)
@@ -517,6 +516,4 @@ class TextFileIO(object):
                     self.comp.notes[i] = self.comp.notes[i+1]
                     self.comp.notes[i+1] = temp
         
-        return measurenotes
-            
-                    
+        return measurenotes        

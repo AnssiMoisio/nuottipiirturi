@@ -1,7 +1,7 @@
 class Note(object):
     
-    ''' Pitch. Numbers are same in Column.rows '''
     
+    ''' Pitch. Numbers are same in Column.rows. Octave 0: A, octave 1: a1, octave 2: a2'''
     a2 = 0      # 
     g1 = 1      #                                               |
     f1 = 2      # ------------------------------------\----|----|----------|----------------------------------------------------
