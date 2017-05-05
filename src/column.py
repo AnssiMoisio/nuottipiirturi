@@ -6,9 +6,9 @@ class Column(object):
         self.measure = measure                          # 0,1,2,...
         self.start = start                              # e.g. 1/8 - 8/8, moment in measure
         self.notes = []                                 # notes that start in this column
-        self.beams = []
-        self.rests = []
-        self.lyrics = []           
+        self.beams = []                                 # beams ------ """---------------
+        self.rests = []                                 # etc
+        self.lyrics = []                                #
         self.find_items(composition)
         self.rows = [[None]*6 for i in range(16)]       # 14 rows of the stave, 6 characters wide column
         self.add_rows()                                 # empty rows

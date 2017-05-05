@@ -24,14 +24,14 @@ class Composition(object):
             if rest.measure == note.measure:
                 if rest.start == note.start:
                     self.remove_rest(rest.measure, rest.start)
-                elif rest.start < note.start and (rest.duration + rest.start) > note.start:
+                elif rest.start < note.start and (rest.duration + rest.start) > note.start:         # these remove or change overlapping rests/notes
                     rest.duration = note.start - rest.start
                     
         self.notes.append(note)
         
     def remove_note(self, measure, start, pitch):
         for note in self.notes:
-            if measure == note.measure and note.start == start and pitch == note.pitch:
+            if measure == note.measure and note.start == start and pitch == note.pitch:            
                 self.notes.remove(note)
 
     def add_rest(self, rest):
@@ -39,7 +39,7 @@ class Composition(object):
             if rest.measure == old.measure:
                 if rest.start == old.start:
                     self.remove_rest(old.measure, old.start)
-                elif old.start < rest.start and (old.duration + old.start) > rest.start:
+                elif old.start < rest.start and (old.duration + old.start) > rest.start:             # here too
                     old.duration = rest.start - old.start
         self.rests.append(rest)
         

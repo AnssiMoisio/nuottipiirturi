@@ -16,9 +16,15 @@ class TextFileIO(object):
         
         
     def keyboard_input(self):
+        '''User input'''
+        
         self.file_name = input("Anna savellystiedoston nimi\n")
-        self.read_file()
-        mode = input("Lisaa tai poista nuotti/tauko/palkki? esim: lisaa nuotti\nTayta tyhjat kohdat tauoilla: tayta\nTallenna: 'tallenna'\nSulje ohjelma: 'quit'\n")
+        try:
+            self.read_file()
+            mode = input("Lisaa tai poista nuotti/tauko/palkki? esim: lisaa nuotti\nTayta tyhjat kohdat tauoilla: tayta\nTallenna: 'tallenna'\nSulje ohjelma: 'quit'\n")
+        except:
+            print("Tekstitiedostoa ei ole. Ohjelman suoritus keskeytetaan.")
+            mode = "quit"
         line = None
         while mode != "quit":
             
@@ -114,6 +120,8 @@ class TextFileIO(object):
     
     
     def read_file(self):
+        '''Reads File and parses it using other methods'''
+        
         file = open(self.file_name, "r")
         current_line = file.readline()
         self.header = current_line
